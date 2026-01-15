@@ -176,7 +176,7 @@
 				<Switch id="allDay" bind:checked={isAllDay} />
 			</div>
 
-			<div class="grid grid-cols-2 gap-3">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
 				<div class="space-y-2">
 					<Label for="startDate">{t.eventForm.start}</Label>
 					<Input id="startDate" type="date" class="w-full" bind:value={startDate} />
@@ -211,11 +211,12 @@
 				</div>
 			</div>
 
-			<Dialog.Footer class="flex justify-between sm:justify-between">
+			<Dialog.Footer class="flex flex-col gap-2 sm:flex-row sm:justify-between">
 				{#if isEditing}
 					<Button
 						type="button"
 						variant="destructive"
+						class="w-full sm:w-auto"
 						onclick={handleDelete}
 						disabled={loading}
 					>
@@ -223,18 +224,19 @@
 						{t.common.delete}
 					</Button>
 				{:else}
-					<div></div>
+					<div class="hidden sm:block"></div>
 				{/if}
-				<div class="flex gap-2">
+				<div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
 					<Button
 						type="button"
 						variant="outline"
+						class="w-full sm:w-auto"
 						disabled={loading}
 						onclick={() => handleOpenChange(false)}
 					>
 						{t.common.cancel}
 					</Button>
-					<Button type="submit" disabled={loading || !summary.trim()}>
+					<Button type="submit" class="w-full sm:w-auto" disabled={loading || !summary.trim()}>
 						{t.common.save}
 					</Button>
 				</div>
