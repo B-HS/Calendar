@@ -31,6 +31,14 @@ jobs:
             - name: Save Docker image
               run: docker save global-calendar:latest | gzip > global-calendar.tar.gz
 
+            - name: Create target directory
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  key: ${{ secrets.SSH_KEY }}
+                  script: mkdir -p ~/global-calendar
+
             - name: Copy files to server
               uses: appleboy/scp-action@v0.1.7
               with:
