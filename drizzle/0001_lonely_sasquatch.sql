@@ -1,0 +1,1 @@
+ALTER TABLE `calendar_event` MODIFY COLUMN `color` varchar(50);

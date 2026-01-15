@@ -1,0 +1,15 @@
+services:
+    app:
+        image: global-calendar:latest
+        container_name: global-calendar
+        ports:
+            - '7979:3000'
+        env_file:
+            - .env
+        restart: unless-stopped
+        networks:
+            - gumyo
+
+networks:
+    gumyo:
+        external: true

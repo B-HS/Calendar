@@ -1,0 +1,45 @@
+name: Deploy to Lightsail
+
+on:
+    push:
+        branches:
+            - prod
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Create .env file
+              run: echo "${{ secrets.ENV_TEXT }}" > .env
+
+            - name: Build Docker image
+              run: docker build -t global-calendar:latest .
+
+            - name: Save Docker image
+              run: docker save global-calendar:latest | gzip > global-calendar.tar.gz
+
+            - name: Copy files to server
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  key: ${{ secrets.SSH_KEY }}
+                  source: global-calendar.tar.gz,compose.yml,.env
+                  target: ~/global-calendar
+
+            - name: Deploy
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  key: ${{ secrets.SSH_KEY }}
+                  script: |
+                      cd ~/global-calendar
+                      docker load < global-calendar.tar.gz
+                      docker compose down || true
+                      docker compose up -d
+                      rm global-calendar.tar.gz
