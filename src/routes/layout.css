@@ -118,4 +118,32 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    input[type='date'],
+    input[type='time'],
+    input[type='datetime-local'] {
+        -webkit-appearance: none;
+        appearance: none;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    input[type='date']::-webkit-datetime-edit,
+    input[type='time']::-webkit-datetime-edit,
+    input[type='datetime-local']::-webkit-datetime-edit {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        padding: 0;
+    }
+
+    input[type='date']::-webkit-datetime-edit-fields-wrapper,
+    input[type='time']::-webkit-datetime-edit-fields-wrapper,
+    input[type='datetime-local']::-webkit-datetime-edit-fields-wrapper {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+    }
 }
