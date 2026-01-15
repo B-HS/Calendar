@@ -176,19 +176,19 @@
 				<Switch id="allDay" bind:checked={isAllDay} />
 			</div>
 
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3 overflow-hidden">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
 				<div class="space-y-2 min-w-0">
 					<Label for="startDate">{t.eventForm.start}</Label>
-					<Input id="startDate" type="date" class="w-full min-w-0" bind:value={startDate} />
+					<Input id="startDate" type="date" class="w-full max-w-full" bind:value={startDate} />
 					{#if !isAllDay}
-						<Input type="time" class="w-full min-w-0" bind:value={startTime} />
+						<Input type="time" class="w-full max-w-full" bind:value={startTime} />
 					{/if}
 				</div>
 				<div class="space-y-2 min-w-0">
 					<Label for="endDate">{t.eventForm.end}</Label>
-					<Input id="endDate" type="date" class="w-full min-w-0" bind:value={endDate} />
+					<Input id="endDate" type="date" class="w-full max-w-full" bind:value={endDate} />
 					{#if !isAllDay}
-						<Input type="time" class="w-full min-w-0" bind:value={endTime} />
+						<Input type="time" class="w-full max-w-full" bind:value={endTime} />
 					{/if}
 				</div>
 			</div>
