@@ -13,8 +13,14 @@
     let password = $state('')
     let error = $state('')
     let loading = $state(false)
+    let googleLoading = $state(false)
 
     const t = $derived(localeStore.t)
+
+    const handleGoogleLogin = async () => {
+        googleLoading = true
+        await authClient.signIn.social({ provider: 'google' })
+    }
 
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault()
@@ -67,8 +73,12 @@
                         {t.common.login}
                     {/if}
                 </Button>
-                <Button variant="outline" class="w-full">
-                    <Google />
+                <Button type="button" variant="outline" class="w-full" onclick={handleGoogleLogin} disabled={googleLoading || loading}>
+                    {#if googleLoading}
+                        <Loader class="mr-2 size-3 animate-spin" />
+                    {:else}
+                        <Google />
+                    {/if}
                     <span>{t.auth.loginWithGoogle}</span>
                 </Button>
                 <p class="text-center text-sm text-muted-foreground">
