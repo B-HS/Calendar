@@ -136,12 +136,12 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-	<Dialog.Content class="max-w-md z-[60]">
+	<Dialog.Content class="max-w-md z-[60] max-h-[80dvh] overflow-y-auto sm:max-h-none sm:overflow-visible">
 		<Dialog.Header>
 			<Dialog.Title>{isEditing ? t.eventForm.editEvent : t.eventForm.newEvent}</Dialog.Title>
 		</Dialog.Header>
 
-		<form onsubmit={(e) => { e.preventDefault(); handleSubmit() }} class="space-y-5">
+		<form onsubmit={(e) => { e.preventDefault(); handleSubmit() }} class="space-y-4">
 			<div class="space-y-2">
 				<Label for="summary">{t.eventForm.summary}</Label>
 				<Input
@@ -176,32 +176,32 @@
 				<Switch id="allDay" bind:checked={isAllDay} />
 			</div>
 
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
-				<div class="space-y-2">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3 overflow-hidden">
+				<div class="space-y-2 min-w-0">
 					<Label for="startDate">{t.eventForm.start}</Label>
-					<Input id="startDate" type="date" class="w-full" bind:value={startDate} />
+					<Input id="startDate" type="date" class="w-full min-w-0" bind:value={startDate} />
 					{#if !isAllDay}
-						<Input type="time" class="w-full" bind:value={startTime} />
+						<Input type="time" class="w-full min-w-0" bind:value={startTime} />
 					{/if}
 				</div>
-				<div class="space-y-2">
+				<div class="space-y-2 min-w-0">
 					<Label for="endDate">{t.eventForm.end}</Label>
-					<Input id="endDate" type="date" class="w-full" bind:value={endDate} />
+					<Input id="endDate" type="date" class="w-full min-w-0" bind:value={endDate} />
 					{#if !isAllDay}
-						<Input type="time" class="w-full" bind:value={endTime} />
+						<Input type="time" class="w-full min-w-0" bind:value={endTime} />
 					{/if}
 				</div>
 			</div>
 
 			<div class="space-y-2">
 				<Label>{t.eventForm.color}</Label>
-				<div class="flex gap-2">
+				<div class="flex flex-wrap gap-2">
 					{#each colors as c}
 						<button
 							type="button"
 							aria-label={c}
 							class={cn(
-								'size-8 rounded-full transition-all',
+								'size-7 shrink-0 rounded-full transition-all sm:size-8',
 								c,
 								color === c ? 'ring-2 ring-offset-2 ring-primary' : 'opacity-60 hover:opacity-100'
 							)}

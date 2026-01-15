@@ -80,7 +80,7 @@
 <Drawer.Root bind:open onOpenChange={handleOpenChange} direction={isMobile ? 'bottom' : 'right'}>
 	<Drawer.Content
 		class={cn(
-			isMobile && 'h-[85vh] max-h-[85vh]',
+			isMobile && 'h-[80dvh] max-h-[80dvh]',
 			!isMobile && 'h-full w-[400px] max-w-[400px]'
 		)}
 	>
