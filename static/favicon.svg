@@ -1,7 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect x="1" y="1" width="30" height="30" rx="3" fill="#0a0a0a" stroke="#27272a" stroke-width="1"/>
-  <g fill="#fafafa">
-    <path d="M11 9c-3.3 0-6 2.7-6 6.5S7.7 22 11 22c1.8 0 3.4-.8 4.5-2l-1.5-1.5c-.7.8-1.7 1.2-2.8 1.2-2.2 0-3.8-1.8-3.8-4.2s1.6-4.2 3.8-4.2c1.1 0 2.1.5 2.8 1.2l1.5-1.5c-1.1-1.2-2.7-2-4.5-2z"/>
-    <path d="M23 14c-2.2 0-4 1.6-4 3.8v4.4h2.3v-4.2c0-1.1.7-1.8 1.7-1.8s1.7.7 1.7 1.8v4.2h2.3v-4.4c0-2.2-1.8-3.8-4-3.8zm-2.5 1.5c.7-.5 1.5-.8 2.5-.8s1.8.3 2.5.8"/>
-  </g>
+  <rect x="1" y="1" width="30" height="30" rx="3" ry="3" fill="#1a1a1a" stroke="#d4d4d4" stroke-width="1"/>
+  <text x="27" y="26" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#ffffff" text-anchor="end">Ca</text>
 </svg>
