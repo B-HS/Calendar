@@ -1,5 +1,6 @@
 import pkg from 'rrule'
 const { RRule } = pkg
+import dayjs from 'dayjs'
 import type { CalendarEvent, RecurrenceRule } from '$widgets/calendar'
 
 const CRLF = '\r\n'
@@ -36,10 +37,6 @@ const formatDateTimeUTC = (date: Date) => {
     )
 }
 
-const formatDateOnly = (date: Date) => {
-    const pad = (n: number) => n.toString().padStart(2, '0')
-    return date.getFullYear().toString() + pad(date.getMonth() + 1) + pad(date.getDate())
-}
 
 const foldLine = (line: string): string => {
     if (line.length <= MAX_LINE_LENGTH) return line
@@ -87,10 +84,11 @@ export const eventToVEvent = (event: CalendarEvent, domain: string): string => {
     lines.push(`DTSTAMP:${formatDateTimeUTC(event.lastModified ?? new Date())}`)
 
     if (event.isAllDay) {
-        const dtendExclusive = new Date(event.dtend)
-        dtendExclusive.setDate(dtendExclusive.getDate() + 1)
-        lines.push(`DTSTART;VALUE=DATE:${formatDateOnly(event.dtstart)}`)
-        lines.push(`DTEND;VALUE=DATE:${formatDateOnly(dtendExclusive)}`)
+        const startDate = dayjs(event.dtstart).startOf('day')
+        const endDate = dayjs(event.dtend).startOf('day')
+        const dtendExclusive = endDate.add(1, 'day')
+        lines.push(`DTSTART;VALUE=DATE:${startDate.format('YYYYMMDD')}`)
+        lines.push(`DTEND;VALUE=DATE:${dtendExclusive.format('YYYYMMDD')}`)
     } else {
         lines.push(`DTSTART:${formatDateTimeUTC(event.dtstart)}`)
         lines.push(`DTEND:${formatDateTimeUTC(event.dtend)}`)

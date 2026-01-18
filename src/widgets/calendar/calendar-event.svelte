@@ -3,7 +3,7 @@
     import { cn } from '$lib/utils'
     import type { CalendarEvent, EventPosition } from './types'
     import { type Locale } from './i18n'
-    import { formatTime, generateEventColor, getDaysBetween } from './utils'
+    import { formatTime, generateEventColor } from './utils'
 
     interface Props {
         event: CalendarEvent
@@ -16,7 +16,6 @@
 
     let { event, position, weekIndex, locale = 'ko', isOverlay = false, onEventClick }: Props = $props()
 
-    const isMultiDay = $derived(getDaysBetween(event.dtstart, event.dtend) > 0)
     let isOverResizeHandle = $state(false)
 
     const { ref, isDragging } = useDraggable({
@@ -86,7 +85,7 @@
     onkeydown={(e) => e.key === 'Enter' && handleClick(e as unknown as MouseEvent)}
     role="button"
     tabindex="0">
-    {#if position.isStart && isMultiDay && !isOverlay}
+    {#if position.isStart && !isOverlay}
         <div
             {@attach leftResizeRef}
             class="absolute left-0 top-0 h-full w-2 cursor-ew-resize opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-50"
@@ -110,7 +109,7 @@
         </span>
     {/if}
 
-    {#if position.isEnd && isMultiDay && !isOverlay}
+    {#if position.isEnd && !isOverlay}
         <div
             {@attach rightResizeRef}
             class="absolute right-0 top-0 h-full w-2 cursor-ew-resize opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-50"

@@ -156,12 +156,22 @@ export const formatDayHeader = (day: CalendarDay, locale: Locale = 'ko') => {
 }
 
 export const moveEvent = (event: CalendarEvent, newStartDate: Date): CalendarEvent => {
-	const duration = dayjs(event.dtend).diff(dayjs(event.dtstart))
 	let newStart = dayjs(newStartDate)
-	if (!event.isAllDay) {
+	let newEnd: Dayjs
+
+	if (event.isAllDay) {
+		const startDate = dayjs(event.dtstart).startOf('day')
+		const endDate = dayjs(event.dtend).startOf('day')
+		const daysDuration = endDate.diff(startDate, 'day')
+
+		newStart = newStart.startOf('day')
+		newEnd = newStart.add(daysDuration, 'day').endOf('day')
+	} else {
+		const duration = dayjs(event.dtend).diff(dayjs(event.dtstart))
 		newStart = newStart.hour(dayjs(event.dtstart).hour()).minute(dayjs(event.dtstart).minute())
+		newEnd = newStart.add(duration)
 	}
-	const newEnd = newStart.add(duration)
+
 	return { ...event, dtstart: newStart.toDate(), dtend: newEnd.toDate() }
 }
 
@@ -177,20 +187,32 @@ export const resizeEvent = (
 
 	if (edge === 'start') {
 		let newStart = originalStart.add(dayOffset, 'day')
-		if (!event.isAllDay) {
+		if (event.isAllDay) {
+			newStart = newStart.startOf('day')
+			const originalEndDay = originalEnd.startOf('day')
+			if (newStart.isAfter(originalEndDay)) {
+				newStart = originalEndDay
+			}
+		} else {
 			newStart = newStart.hour(originalStart.hour()).minute(originalStart.minute())
-		}
-		if (newStart.isAfter(originalEnd) || newStart.isSame(originalEnd, 'day') && !event.isAllDay) {
-			newStart = event.isAllDay ? originalEnd : originalEnd.subtract(1, 'hour')
+			if (newStart.isAfter(originalEnd) || newStart.isSame(originalEnd, 'day')) {
+				newStart = originalEnd.subtract(1, 'hour')
+			}
 		}
 		return { ...event, dtstart: newStart.toDate() }
 	} else {
 		let newEnd = originalEnd.add(dayOffset, 'day')
-		if (!event.isAllDay) {
+		if (event.isAllDay) {
+			newEnd = newEnd.startOf('day').endOf('day')
+			const originalStartDay = originalStart.startOf('day')
+			if (newEnd.startOf('day').isBefore(originalStartDay)) {
+				newEnd = originalStartDay.endOf('day')
+			}
+		} else {
 			newEnd = newEnd.hour(originalEnd.hour()).minute(originalEnd.minute())
-		}
-		if (newEnd.isBefore(originalStart) || newEnd.isSame(originalStart, 'day') && !event.isAllDay) {
-			newEnd = event.isAllDay ? originalStart : originalStart.add(1, 'hour')
+			if (newEnd.isBefore(originalStart) || newEnd.isSame(originalStart, 'day')) {
+				newEnd = originalStart.add(1, 'hour')
+			}
 		}
 		return { ...event, dtend: newEnd.toDate() }
 	}
