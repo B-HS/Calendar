@@ -50,6 +50,8 @@ export const zh: Translations = {
 		profileImage: '头像',
 		changeImage: '更换图片',
 		removeImage: '删除图片',
+		timezone: '时区',
+		timezoneDescription: 'ICS日历订阅使用的时区。',
 		updateSuccess: '资料更新成功。',
 		updateFailed: '资料更新失败。',
 		imageUploadFailed: '图片上传失败。'

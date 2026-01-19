@@ -15,6 +15,13 @@
       "when": 1768456689246,
       "tag": "0001_lonely_sasquatch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1737331200000,
+      "tag": "0002_add_user_timezone",
+      "breakpoints": true
     }
   ]
 }

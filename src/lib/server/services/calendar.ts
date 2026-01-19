@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db'
-import { calendarEvent, calendarSubscription } from '$lib/server/db/schema'
+import { calendarEvent, calendarSubscription, user } from '$lib/server/db/schema'
 import { eq, and, gte, lte, or, isNotNull } from 'drizzle-orm'
 import { generateIcsUid, generateSubscriptionToken, getRecurrenceOccurrences } from '$lib/utils/ics'
 import type { CalendarEvent, RecurrenceRule } from '$widgets/calendar'
@@ -210,4 +210,13 @@ export const regenerateSubscriptionToken = async (userId: string) => {
     await db.update(calendarSubscription).set({ token: newToken }).where(eq(calendarSubscription.userId, userId))
 
     return newToken
+}
+
+export const getUserTimezone = async (userId: string): Promise<string> => {
+    const rows = await db.select({ timezone: user.timezone }).from(user).where(eq(user.id, userId))
+    return rows[0]?.timezone ?? 'Asia/Seoul'
+}
+
+export const updateUserTimezone = async (userId: string, timezone: string): Promise<void> => {
+    await db.update(user).set({ timezone }).where(eq(user.id, userId))
 }

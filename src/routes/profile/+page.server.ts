@@ -2,11 +2,14 @@ import { redirect, fail } from '@sveltejs/kit'
 import type { PageServerLoad, Actions } from './$types'
 import { auth } from '$lib/auth'
 import sharp from 'sharp'
+import * as calendarService from '$lib/server/services/calendar'
 
 export const load: PageServerLoad = async ({ request, depends }) => {
     depends('app:profile')
     const session = await auth.api.getSession({ headers: request.headers })
     if (!session?.user) throw redirect(302, '/login')
+
+    const timezone = await calendarService.getUserTimezone(session.user.id)
 
     return {
         user: {
@@ -14,6 +17,7 @@ export const load: PageServerLoad = async ({ request, depends }) => {
             name: session.user.name,
             email: session.user.email,
             image: session.user.image,
+            timezone,
         },
     }
 }
@@ -79,6 +83,26 @@ export const actions: Actions = {
         } catch (error) {
             console.error('Profile update error:', error)
             return fail(500, { message: 'Failed to update profile' })
+        }
+    },
+
+    updateTimezone: async ({ request }) => {
+        const session = await auth.api.getSession({ headers: request.headers })
+        if (!session?.user) return fail(401, { message: 'Unauthorized' })
+
+        const formData = await request.formData()
+        const timezone = formData.get('timezone') as string
+
+        if (!timezone) {
+            return fail(400, { message: 'Timezone is required' })
+        }
+
+        try {
+            await calendarService.updateUserTimezone(session.user.id, timezone)
+            return { success: true }
+        } catch (error) {
+            console.error('Timezone update error:', error)
+            return fail(500, { message: 'Failed to update timezone' })
         }
     },
 }

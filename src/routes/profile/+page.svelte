@@ -4,6 +4,7 @@
     import * as Card from '$lib/components/ui/card'
     import { Input } from '$lib/components/ui/input'
     import { Label } from '$lib/components/ui/label'
+    import * as Select from '$lib/components/ui/select'
     import { Loader, ArrowLeft, Camera, X } from '@lucide/svelte'
     import { localeStore } from '$lib/i18n'
     import { toast, Toaster } from 'svelte-sonner'
@@ -16,11 +17,37 @@
     let image = $state<string | null>(null)
     let imageFile = $state<File | null>(null)
     let loading = $state(false)
+    let timezoneLoading = $state(false)
+    let selectedTimezone = $state('')
     let fileInput: HTMLInputElement
+
+    const timezones = [
+        { value: 'Pacific/Honolulu', label: '(UTC-10:00) Hawaii' },
+        { value: 'America/Anchorage', label: '(UTC-09:00) Alaska' },
+        { value: 'America/Los_Angeles', label: '(UTC-08:00) Pacific Time' },
+        { value: 'America/Denver', label: '(UTC-07:00) Mountain Time' },
+        { value: 'America/Chicago', label: '(UTC-06:00) Central Time' },
+        { value: 'America/New_York', label: '(UTC-05:00) Eastern Time' },
+        { value: 'America/Sao_Paulo', label: '(UTC-03:00) Sao Paulo' },
+        { value: 'Europe/London', label: '(UTC+00:00) London' },
+        { value: 'Europe/Paris', label: '(UTC+01:00) Paris' },
+        { value: 'Europe/Berlin', label: '(UTC+01:00) Berlin' },
+        { value: 'Europe/Moscow', label: '(UTC+03:00) Moscow' },
+        { value: 'Asia/Dubai', label: '(UTC+04:00) Dubai' },
+        { value: 'Asia/Kolkata', label: '(UTC+05:30) India' },
+        { value: 'Asia/Bangkok', label: '(UTC+07:00) Bangkok' },
+        { value: 'Asia/Singapore', label: '(UTC+08:00) Singapore' },
+        { value: 'Asia/Shanghai', label: '(UTC+08:00) Shanghai' },
+        { value: 'Asia/Tokyo', label: '(UTC+09:00) Tokyo' },
+        { value: 'Asia/Seoul', label: '(UTC+09:00) Seoul' },
+        { value: 'Australia/Sydney', label: '(UTC+11:00) Sydney' },
+        { value: 'Pacific/Auckland', label: '(UTC+13:00) Auckland' },
+    ]
 
     $effect(() => {
         name = data.user.name ?? ''
         image = data.user.image ?? null
+        selectedTimezone = data.user.timezone ?? 'Asia/Seoul'
     })
 
     const handleImageChange = async (e: Event) => {
@@ -73,6 +100,32 @@
         }
 
         loading = false
+    }
+
+    const handleTimezoneChange = async (value: string | undefined) => {
+        if (!value || value === selectedTimezone) return
+
+        timezoneLoading = true
+        selectedTimezone = value
+
+        const formData = new FormData()
+        formData.append('timezone', value)
+
+        const res = await fetch('?/updateTimezone', {
+            method: 'POST',
+            body: formData,
+        })
+
+        const result = await res.json()
+
+        if (result.type === 'success') {
+            toast.success(t.profile.updateSuccess)
+            await invalidate('app:profile')
+        } else {
+            toast.error(t.profile.updateFailed)
+        }
+
+        timezoneLoading = false
     }
 </script>
 
@@ -147,5 +200,27 @@
                 </Button>
             </Card.Footer>
         </form>
+    </Card.Root>
+
+    <Card.Root class="mt-4">
+        <Card.Header>
+            <Card.Title>{t.profile.timezone}</Card.Title>
+            <Card.Description>{t.profile.timezoneDescription}</Card.Description>
+        </Card.Header>
+        <Card.Content>
+            <Select.Root type="single" value={selectedTimezone} onValueChange={handleTimezoneChange}>
+                <Select.Trigger class="w-full" disabled={timezoneLoading}>
+                    {#if timezoneLoading}
+                        <Loader class="mr-2 size-3 animate-spin" />
+                    {/if}
+                    {timezones.find(tz => tz.value === selectedTimezone)?.label ?? selectedTimezone}
+                </Select.Trigger>
+                <Select.Content>
+                    {#each timezones as tz}
+                        <Select.Item value={tz.value}>{tz.label}</Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </Card.Content>
     </Card.Root>
 </div>

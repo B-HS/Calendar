@@ -6,6 +6,7 @@ export const user = mysqlTable('user', {
     email: varchar('email', { length: 255 }).notNull().unique(),
     emailVerified: boolean('email_verified').notNull().default(false),
     image: text('image'),
+    timezone: varchar('timezone', { length: 64 }).notNull().default('Asia/Seoul'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
 })

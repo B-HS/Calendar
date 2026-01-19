@@ -51,6 +51,8 @@ export interface Translations {
 		profileImage: string
 		changeImage: string
 		removeImage: string
+		timezone: string
+		timezoneDescription: string
 		updateSuccess: string
 		updateFailed: string
 		imageUploadFailed: string

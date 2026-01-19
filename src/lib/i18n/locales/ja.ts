@@ -50,6 +50,8 @@ export const ja: Translations = {
 		profileImage: 'プロフィール画像',
 		changeImage: '画像を変更',
 		removeImage: '画像を削除',
+		timezone: 'タイムゾーン',
+		timezoneDescription: 'ICSカレンダー購読で使用されるタイムゾーンです。',
 		updateSuccess: 'プロフィールが更新されました。',
 		updateFailed: 'プロフィールの更新に失敗しました。',
 		imageUploadFailed: '画像のアップロードに失敗しました。'

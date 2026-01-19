@@ -50,6 +50,8 @@ export const ko: Translations = {
 		profileImage: '프로필 이미지',
 		changeImage: '이미지 변경',
 		removeImage: '이미지 삭제',
+		timezone: '시간대',
+		timezoneDescription: 'ICS 캘린더 구독 시 사용되는 시간대입니다.',
 		updateSuccess: '정보가 업데이트되었습니다.',
 		updateFailed: '정보 업데이트에 실패했습니다.',
 		imageUploadFailed: '이미지 업로드에 실패했습니다.'

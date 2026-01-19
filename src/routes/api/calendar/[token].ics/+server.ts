@@ -8,10 +8,11 @@ export const GET: RequestHandler = async ({ params, url }) => {
     if (!subscription) throw error(404, 'Calendar not found')
 
     const events = await calendarService.getAllEvents(subscription.userId)
+    const timezone = await calendarService.getUserTimezone(subscription.userId)
     const domain = url.hostname || 'global-calendar'
     const calendarName = subscription.name ?? 'My Calendar'
 
-    const icsContent = eventsToICS(events, calendarName, domain)
+    const icsContent = eventsToICS(events, calendarName, domain, timezone)
 
     return new Response(icsContent, {
         headers: {

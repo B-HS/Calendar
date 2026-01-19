@@ -1,6 +1,5 @@
 import pkg from 'rrule'
 const { RRule } = pkg
-import dayjs from 'dayjs'
 import type { CalendarEvent, RecurrenceRule } from '$widgets/calendar'
 
 const CRLF = '\r\n'
@@ -23,8 +22,42 @@ const WEEKDAY_MAP = {
     SU: RRule.SU,
 } as const
 
+const pad = (n: number) => n.toString().padStart(2, '0')
+
+const getDatePartsInTimezone = (date: Date, timezone: string) => {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    })
+    const parts = formatter.formatToParts(date)
+    const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '0'
+    return {
+        year: Number(get('year')),
+        month: Number(get('month')),
+        day: Number(get('day')),
+        hour: Number(get('hour')),
+        minute: Number(get('minute')),
+        second: Number(get('second')),
+    }
+}
+
+const formatDateOnly = (date: Date, timezone: string) => {
+    const p = getDatePartsInTimezone(date, timezone)
+    return `${p.year}${pad(p.month)}${pad(p.day)}`
+}
+
+const formatDateTimeLocal = (date: Date, timezone: string) => {
+    const p = getDatePartsInTimezone(date, timezone)
+    return `${p.year}${pad(p.month)}${pad(p.day)}T${pad(p.hour)}${pad(p.minute)}${pad(p.second)}`
+}
+
 const formatDateTimeUTC = (date: Date) => {
-    const pad = (n: number) => n.toString().padStart(2, '0')
     return (
         date.getUTCFullYear().toString() +
         pad(date.getUTCMonth() + 1) +
@@ -36,7 +69,6 @@ const formatDateTimeUTC = (date: Date) => {
         'Z'
     )
 }
-
 
 const foldLine = (line: string): string => {
     if (line.length <= MAX_LINE_LENGTH) return line
@@ -76,7 +108,38 @@ const formatRRule = (rrule: RecurrenceRule, dtstart: Date): string => {
     return rruleLine ? rruleLine.replace('RRULE:', '') : ''
 }
 
-export const eventToVEvent = (event: CalendarEvent, domain: string): string => {
+const generateVTimezone = (timezone: string): string => {
+    const lines: string[] = []
+    lines.push('BEGIN:VTIMEZONE')
+    lines.push(`TZID:${timezone}`)
+    lines.push('BEGIN:STANDARD')
+    lines.push('DTSTART:19700101T000000')
+    lines.push(`TZNAME:${timezone}`)
+
+    const now = new Date()
+
+    const formatter = new Intl.DateTimeFormat('en-US', { timeZone: timezone, timeZoneName: 'shortOffset' })
+    const parts = formatter.formatToParts(now)
+    const offsetStr = parts.find(p => p.type === 'timeZoneName')?.value ?? '+0000'
+
+    const match = offsetStr.match(/GMT([+-])(\d{1,2})(?::?(\d{2}))?/)
+    let offsetFormatted = '+0000'
+    if (match) {
+        const sign = match[1]
+        const hours = match[2].padStart(2, '0')
+        const minutes = match[3] ?? '00'
+        offsetFormatted = `${sign}${hours}${minutes}`
+    }
+
+    lines.push(`TZOFFSETFROM:${offsetFormatted}`)
+    lines.push(`TZOFFSETTO:${offsetFormatted}`)
+    lines.push('END:STANDARD')
+    lines.push('END:VTIMEZONE')
+
+    return lines.join(CRLF)
+}
+
+export const eventToVEvent = (event: CalendarEvent, domain: string, timezone: string): string => {
     const lines: string[] = []
 
     lines.push('BEGIN:VEVENT')
@@ -84,14 +147,16 @@ export const eventToVEvent = (event: CalendarEvent, domain: string): string => {
     lines.push(`DTSTAMP:${formatDateTimeUTC(event.lastModified ?? new Date())}`)
 
     if (event.isAllDay) {
-        const startDate = dayjs(event.dtstart).startOf('day')
-        const endDate = dayjs(event.dtend).startOf('day')
-        const dtendExclusive = endDate.add(1, 'day')
-        lines.push(`DTSTART;VALUE=DATE:${startDate.format('YYYYMMDD')}`)
-        lines.push(`DTEND;VALUE=DATE:${dtendExclusive.format('YYYYMMDD')}`)
+        const startDateStr = formatDateOnly(event.dtstart, timezone)
+        const endDate = new Date(event.dtend)
+        endDate.setDate(endDate.getDate() + 1)
+        const endDateStr = formatDateOnly(endDate, timezone)
+
+        lines.push(`DTSTART;VALUE=DATE:${startDateStr}`)
+        lines.push(`DTEND;VALUE=DATE:${endDateStr}`)
     } else {
-        lines.push(`DTSTART:${formatDateTimeUTC(event.dtstart)}`)
-        lines.push(`DTEND:${formatDateTimeUTC(event.dtend)}`)
+        lines.push(`DTSTART;TZID=${timezone}:${formatDateTimeLocal(event.dtstart, timezone)}`)
+        lines.push(`DTEND;TZID=${timezone}:${formatDateTimeLocal(event.dtend, timezone)}`)
     }
 
     lines.push(`SUMMARY:${escapeText(event.summary)}`)
@@ -141,7 +206,7 @@ export const eventToVEvent = (event: CalendarEvent, domain: string): string => {
     return lines.map(foldLine).join(CRLF)
 }
 
-export const eventsToICS = (events: CalendarEvent[], calendarName: string, domain: string): string => {
+export const eventsToICS = (events: CalendarEvent[], calendarName: string, domain: string, timezone: string): string => {
     const lines: string[] = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
@@ -149,10 +214,16 @@ export const eventsToICS = (events: CalendarEvent[], calendarName: string, domai
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH',
         `X-WR-CALNAME:${escapeText(calendarName)}`,
+        `X-WR-TIMEZONE:${timezone}`,
     ]
 
+    const hasTimedEvents = events.some((e) => !e.isAllDay)
+    if (hasTimedEvents) {
+        lines.push(generateVTimezone(timezone))
+    }
+
     for (const event of events) {
-        lines.push(eventToVEvent(event, domain))
+        lines.push(eventToVEvent(event, domain, timezone))
     }
 
     lines.push('END:VCALENDAR')

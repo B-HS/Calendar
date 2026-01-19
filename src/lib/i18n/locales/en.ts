@@ -50,6 +50,8 @@ export const en: Translations = {
 		profileImage: 'Profile Image',
 		changeImage: 'Change Image',
 		removeImage: 'Remove Image',
+		timezone: 'Timezone',
+		timezoneDescription: 'Timezone used for ICS calendar subscription.',
 		updateSuccess: 'Profile updated successfully.',
 		updateFailed: 'Failed to update profile.',
 		imageUploadFailed: 'Failed to upload image.'
