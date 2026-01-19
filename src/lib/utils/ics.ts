@@ -148,9 +148,9 @@ export const eventToVEvent = (event: CalendarEvent, domain: string, timezone: st
 
     if (event.isAllDay) {
         const startDateStr = formatDateOnly(event.dtstart, timezone)
-        const endDate = new Date(event.dtend)
-        endDate.setDate(endDate.getDate() + 1)
-        const endDateStr = formatDateOnly(endDate, timezone)
+        const endParts = getDatePartsInTimezone(event.dtend, timezone)
+        const endDateObj = new Date(Date.UTC(endParts.year, endParts.month - 1, endParts.day + 1))
+        const endDateStr = `${endDateObj.getUTCFullYear()}${pad(endDateObj.getUTCMonth() + 1)}${pad(endDateObj.getUTCDate())}`
 
         lines.push(`DTSTART;VALUE=DATE:${startDateStr}`)
         lines.push(`DTEND;VALUE=DATE:${endDateStr}`)
