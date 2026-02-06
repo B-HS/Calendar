@@ -8,9 +8,9 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-#     networks:
-#       - gumyo
+    networks:
+      - gumyo
 
-# networks:
-#   gumyo:
-#     external: true
+networks:
+  gumyo:
+    external: true
