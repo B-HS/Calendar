@@ -64,6 +64,7 @@ jobs:
                   script: |
                       cd ~/calendar-app
                       docker load < calendar-app.tar.gz
-                      docker compose down || true
+                      docker stop calendar-app || true
+                      docker rm calendar-app || true
                       docker compose up -d
                       rm calendar-app.tar.gz
