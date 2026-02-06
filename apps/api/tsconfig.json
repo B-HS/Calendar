@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "hono/jsx",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "target": "ESNext",
+        "lib": ["ESNext"],
+        "types": ["bun-types"],
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@route/*": ["route/*"],
+            "@service/*": ["service/*"],
+            "@db/*": ["db/*"],
+            "@utils/*": ["utils/*"],
+            "@middleware/*": ["middleware/*"],
+            "@page/*": ["page/*"],
+            "@schema/*": ["schema/*"]
+        }
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules", "example", "**/*.test.ts"]
+}

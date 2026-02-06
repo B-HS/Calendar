@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    container_name: calendar-app
+    ports:
+      - "7979:3000"
+      - "37979:4000"
+    env_file:
+      - .env
+    restart: unless-stopped
+#     networks:
+#       - gumyo
+
+# networks:
+#   gumyo:
+#     external: true
