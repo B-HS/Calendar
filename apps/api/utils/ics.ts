@@ -1,5 +1,11 @@
 import { RRule, Frequency } from 'rrule'
 import type { RecurrenceRule, CalendarEvent } from '@service/calendar'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export const generateIcsUid = () => `${crypto.randomUUID()}@b-calendar`
 
@@ -34,7 +40,7 @@ export const getRecurrenceOccurrences = (rrule: RecurrenceRule, dtstart: Date, r
     return rule.between(rangeStart, rangeEnd, true)
 }
 
-const formatDateTimeICS = (date: Date, isAllDay: boolean) => {
+const formatDateTimeICS = (date: Date, isAllDay: boolean, tz?: string) => {
     if (isAllDay) {
         const year = date.getUTCFullYear()
         const month = String(date.getUTCMonth() + 1).padStart(2, '0')
@@ -42,12 +48,17 @@ const formatDateTimeICS = (date: Date, isAllDay: boolean) => {
         return `${year}${month}${day}`
     }
 
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    const seconds = String(date.getSeconds()).padStart(2, '0')
+    if (tz) {
+        const d = dayjs.utc(date).tz(tz)
+        return `${d.year()}${String(d.month() + 1).padStart(2, '0')}${String(d.date()).padStart(2, '0')}T${String(d.hour()).padStart(2, '0')}${String(d.minute()).padStart(2, '0')}${String(d.second()).padStart(2, '0')}`
+    }
+
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(date.getUTCDate()).padStart(2, '0')
+    const hours = String(date.getUTCHours()).padStart(2, '0')
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0')
     return `${year}${month}${day}T${hours}${minutes}${seconds}`
 }
 
@@ -83,8 +94,8 @@ export const eventsToICS = (events: CalendarEvent[], calendarName: string, domai
             lines.push(`DTSTART;VALUE=DATE:${formatDateTimeICS(event.dtstart, true)}`)
             lines.push(`DTEND;VALUE=DATE:${formatDateTimeICS(event.dtend, true)}`)
         } else {
-            lines.push(`DTSTART;TZID=${timezone}:${formatDateTimeICS(event.dtstart, false)}`)
-            lines.push(`DTEND;TZID=${timezone}:${formatDateTimeICS(event.dtend, false)}`)
+            lines.push(`DTSTART;TZID=${timezone}:${formatDateTimeICS(event.dtstart, false, timezone)}`)
+            lines.push(`DTEND;TZID=${timezone}:${formatDateTimeICS(event.dtend, false, timezone)}`)
         }
 
         lines.push(`SUMMARY:${escapeICSText(event.summary)}`)

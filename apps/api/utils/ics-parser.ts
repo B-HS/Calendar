@@ -1,7 +1,18 @@
 import type { CalendarEvent, RecurrenceRule, EventStatus, EventTransparency } from '@service/calendar'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const unescapeICSText = (text: string) =>
     text.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\')
+
+const extractTZID = (params: string): string | null => {
+    const match = params.match(/TZID=([^;:]+)/)
+    return match ? match[1] : null
+}
 
 const parseICSDateTime = (value: string, params?: string): { date: Date; isAllDay: boolean } => {
     const isAllDay = params?.includes('VALUE=DATE') || value.length === 8
@@ -25,7 +36,14 @@ const parseICSDateTime = (value: string, params?: string): { date: Date; isAllDa
         return { date: new Date(Date.UTC(year, month, day, hours, minutes, seconds)), isAllDay: false }
     }
 
-    return { date: new Date(year, month, day, hours, minutes, seconds), isAllDay: false }
+    const tzid = params ? extractTZID(params) : null
+    if (tzid) {
+        const dateTimeStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+        const parsed = dayjs.tz(dateTimeStr, tzid)
+        return { date: parsed.utc().toDate(), isAllDay: false }
+    }
+
+    return { date: new Date(Date.UTC(year, month, day, hours, minutes, seconds)), isAllDay: false }
 }
 
 const parseRRule = (value: string): RecurrenceRule | undefined => {
