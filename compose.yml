@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    image: calendar-app:latest
     container_name: calendar-app
     ports:
       - "7979:3000"
