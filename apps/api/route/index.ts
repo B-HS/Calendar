@@ -7,7 +7,7 @@ import { createCaldavRoute } from './caldav/index'
 import type { AppEnv } from '@middleware/index'
 
 export const initRoutes = (app: OpenAPIHono<AppEnv>) => {
-    app.on(['GET', 'POST'], '/api/auth/**', (c) => auth.handler(c.req.raw))
+    app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw))
 
     app.route('/api/events', createEventsRoute())
     app.route('/api/calendar/subscription', createSubscriptionRoute())
