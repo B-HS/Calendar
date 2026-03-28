@@ -45,8 +45,10 @@ const generateMobileconfig = (config: {
     const fullDescription = escapeXml(config.description || config.locale.caldavAccountSetup(config.name))
     const username = escapeXml(config.username)
     const password = escapeXml(config.password)
-    const hostname = escapeXml(new URL(config.caldavUrl).hostname)
-    const port = new URL(config.caldavUrl).port || CALDAV_DEFAULT_PORT
+    const parsedUrl = new URL(config.caldavUrl)
+    const hostname = escapeXml(parsedUrl.hostname)
+    const port = parsedUrl.port || CALDAV_DEFAULT_PORT
+    const principalPath = escapeXml(parsedUrl.pathname)
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -62,7 +64,7 @@ const generateMobileconfig = (config: {
             <key>CalDAVPort</key>
             <integer>${port}</integer>
             <key>CalDAVPrincipalURL</key>
-            <string>/</string>
+            <string>${principalPath}</string>
             <key>CalDAVUseSSL</key>
             <${config.caldavUrl.startsWith('https') ? 'true' : 'false'}/>
             <key>CalDAVUsername</key>
