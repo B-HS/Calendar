@@ -10,6 +10,7 @@ import {
     CALDAV_PAYLOAD_TYPE,
     CALDAV_PROFILE_PREFIX,
     CALDAV_PROFILE_TYPE,
+    CALDAV_PROXY_HOST,
 } from '@/shared/constant/caldav'
 import { Button } from '@/shared/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog'
@@ -118,12 +119,14 @@ const downloadFile = (content: string, filename: string, mimeType: string) => {
 export const CaldavProfileDialog: FC<CaldavProfileDialogProps> = ({ open, onOpenChange, caldavUrl, token, defaultName }) => {
     const { locale } = useCalendar()
 
+    const proxiedCaldavUrl = CALDAV_PROXY_HOST ? caldavUrl.replace(new URL(caldavUrl).host, CALDAV_PROXY_HOST) : caldavUrl
+
     const serverAddress = (() => {
         try {
-            const url = new URL(caldavUrl)
+            const url = new URL(proxiedCaldavUrl)
             return url.port ? `${url.hostname}:${url.port}` : url.hostname
         } catch {
-            return caldavUrl
+            return proxiedCaldavUrl
         }
     })()
 
@@ -131,7 +134,7 @@ export const CaldavProfileDialog: FC<CaldavProfileDialogProps> = ({ open, onOpen
     const [description, setDescription] = useState('')
 
     const handleDownload = () => {
-        const xml = generateMobileconfig({ name, description, caldavUrl, username: CALDAV_DEFAULT_USERNAME, password: token, locale })
+        const xml = generateMobileconfig({ name, description, caldavUrl: proxiedCaldavUrl, username: CALDAV_DEFAULT_USERNAME, password: token, locale })
         downloadFile(xml, `${name}.mobileconfig`, CALDAV_MIME_TYPE)
         onOpenChange(false)
     }
