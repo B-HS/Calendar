@@ -85,6 +85,12 @@ export type CalendarLocale = {
     tentative: string
     cancelled: string
     colorPicker: string
+    newGroup: string
+    editGroup: string
+    deleteGroup: string
+    deleteGroupConfirmTitle: string
+    deleteGroupConfirmDescription: string
+    groupName: string
     dataLoadError: string
     errorOccurred: string
     retry: string

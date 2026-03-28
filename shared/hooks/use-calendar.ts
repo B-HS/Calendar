@@ -29,6 +29,10 @@ type CalendarContextValue = {
     toggleGroupVisibility: (groupId: string) => void
     moveEventToGroup: (eventId: string, groupId: string) => void
     getGroupById: (groupId?: string) => CalendarGroup | undefined
+
+    createGroup: (input: { name: string; color: string }) => void
+    updateGroup: (id: string, input: { name?: string; color?: string }) => void
+    deleteGroup: (id: string) => void
 }
 
 type UseCalendarProviderProps = {
@@ -41,6 +45,9 @@ type UseCalendarProviderProps = {
     onDeleteEvent: (id: string) => void
     onToggleGroupVisibility: (groupId: string) => void
     onMoveEventToGroup: (eventId: string, groupId: string) => void
+    onCreateGroup: (input: { name: string; color: string }) => void
+    onUpdateGroup: (id: string, input: { name?: string; color?: string }) => void
+    onDeleteGroup: (id: string) => void
     onMonthChange?: (date: Date) => void
 }
 
@@ -54,6 +61,9 @@ export const useCalendarProvider = ({
     onDeleteEvent,
     onToggleGroupVisibility,
     onMoveEventToGroup,
+    onCreateGroup,
+    onUpdateGroup,
+    onDeleteGroup,
     onMonthChange,
 }: UseCalendarProviderProps) => {
     const todayDate = today ? parseDate(today) : new Date()
@@ -94,6 +104,10 @@ export const useCalendarProvider = ({
     const moveEventToGroup = (eventId: string, groupId: string) => onMoveEventToGroup(eventId, groupId)
     const getGroupById = (groupId?: string) => (groupId ? groups.find((g) => g.id === groupId) : undefined)
 
+    const createGroup = (input: { name: string; color: string }) => onCreateGroup(input)
+    const updateGroup = (id: string, input: { name?: string; color?: string }) => onUpdateGroup(id, input)
+    const deleteGroup = (id: string) => onDeleteGroup(id)
+
     return {
         currentDate,
         events,
@@ -113,6 +127,9 @@ export const useCalendarProvider = ({
         toggleGroupVisibility,
         moveEventToGroup,
         getGroupById,
+        createGroup,
+        updateGroup,
+        deleteGroup,
     } satisfies CalendarContextValue
 }
 

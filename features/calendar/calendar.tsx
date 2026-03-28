@@ -16,6 +16,9 @@ type CalendarProviderProps = PropsWithChildren<{
     onDeleteEvent: (id: string) => void
     onToggleGroupVisibility: (groupId: string) => void
     onMoveEventToGroup: (eventId: string, groupId: string) => void
+    onCreateGroup: (input: { name: string; color: string }) => void
+    onUpdateGroup: (id: string, input: { name?: string; color?: string }) => void
+    onDeleteGroup: (id: string) => void
     onMonthChange?: (date: Date) => void
     className?: string
 }>
@@ -31,6 +34,9 @@ export const Calendar: FC<CalendarProviderProps> = ({
     onDeleteEvent,
     onToggleGroupVisibility,
     onMoveEventToGroup,
+    onCreateGroup,
+    onUpdateGroup,
+    onDeleteGroup,
     onMonthChange,
     className,
 }) => {
@@ -44,6 +50,9 @@ export const Calendar: FC<CalendarProviderProps> = ({
         onDeleteEvent,
         onToggleGroupVisibility,
         onMoveEventToGroup,
+        onCreateGroup,
+        onUpdateGroup,
+        onDeleteGroup,
         onMonthChange,
     })
 

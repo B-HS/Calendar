@@ -5,7 +5,9 @@ import {
     useCalendarGroups,
     useCalendarSubscription,
     useCreateEvent,
+    useCreateGroup,
     useDeleteEvent,
+    useDeleteGroup,
     useUpdateEvent,
     useUpdateGroup,
 } from '@/entities/calendar/query'
@@ -39,7 +41,9 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
     const createEvent = useCreateEvent()
     const updateEvent = useUpdateEvent()
     const deleteEvent = useDeleteEvent()
+    const createGroup = useCreateGroup()
     const updateGroup = useUpdateGroup()
+    const deleteGroup = useDeleteGroup()
     const handleAddEvent = (event: Omit<CalendarEvent, 'id'>) => {
         createEvent.mutate(event)
     }
@@ -63,6 +67,18 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
         updateEvent.mutate({ uid: eventId, input: { groupId } })
     }
 
+    const handleCreateGroup = (input: { name: string; color: string }) => {
+        createGroup.mutate(input)
+    }
+
+    const handleUpdateGroup = (id: string, input: { name?: string; color?: string }) => {
+        updateGroup.mutate({ id, input })
+    }
+
+    const handleDeleteGroup = (id: string) => {
+        deleteGroup.mutate(id)
+    }
+
     const handleMonthChange = (date: Date) => {
         setCurrentMonth(formatDate(date))
     }
@@ -78,6 +94,9 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
             onDeleteEvent={handleDeleteEvent}
             onToggleGroupVisibility={handleToggleGroupVisibility}
             onMoveEventToGroup={handleMoveEventToGroup}
+            onCreateGroup={handleCreateGroup}
+            onUpdateGroup={handleUpdateGroup}
+            onDeleteGroup={handleDeleteGroup}
             onMonthChange={handleMonthChange}
             className='h-screen'>
             <CalendarSidebar className='hidden md:flex'>

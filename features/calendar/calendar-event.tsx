@@ -88,7 +88,12 @@ export const CalendarEventBar: FC<CalendarEventBarProps> = ({
                     onHoverChange={setIsOverResizeHandle}
                 />
             )}
-            {isStart && <span className='truncate'>{event.title}</span>}
+            {isStart && (
+                <span className='truncate'>
+                    {!event.isAllDay && event.startTime && <span className='mr-1 shrink-0 text-white/70 hidden min-[900px]:inline'>{event.startTime}</span>}
+                    {event.title}
+                </span>
+            )}
             {isEnd && (
                 <ResizeHandle
                     eventId={event.id}
