@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 const PROTECTED_PATHS = ['/calendar']
 const API_URL = process.env.API_URL ?? 'http://localhost:9999'
 
-export const middleware = async (request: NextRequest) => {
+export const proxy = async (request: NextRequest) => {
     const { pathname } = request.nextUrl
 
     const isProtected = PROTECTED_PATHS.some((path) => pathname.startsWith(path))
