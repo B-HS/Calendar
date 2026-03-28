@@ -1,5 +1,6 @@
 'use client'
 
+import { useSession } from '@/shared/lib/auth-client'
 import { ko } from '@/shared/lib/i18n'
 import { FADE_UP, MOTION_DURATION, STAGGER } from '@/shared/constant/motion'
 import { HOME_FEATURES } from '@/shared/constant/marketing'
@@ -12,6 +13,9 @@ const fadeUp = FADE_UP
 const stagger = STAGGER
 
 export const HomeWidget: FC = () => {
+    const { data: session } = useSession()
+    const authHref = session ? '/calendar' : '/login'
+
     return (
         <div className='min-h-screen bg-background'>
             <nav className='fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm'>
@@ -24,7 +28,7 @@ export const HomeWidget: FC = () => {
                             {ko.about}
                         </Link>
                         <Button asChild variant='ghost' size='sm'>
-                            <Link href='/login'>{ko.getStarted}</Link>
+                            <Link href={authHref}>{ko.getStarted}</Link>
                         </Button>
                     </div>
                 </div>
@@ -51,7 +55,7 @@ export const HomeWidget: FC = () => {
                 </motion.p>
                 <motion.div variants={fadeUp} transition={{ duration: MOTION_DURATION }} className='mt-10 flex gap-3'>
                     <Button asChild size='lg'>
-                        <Link href='/login'>{ko.startFree}</Link>
+                        <Link href={authHref}>{ko.startFree}</Link>
                     </Button>
                     <Button asChild variant='outline' size='lg'>
                         <Link href='/about'>{ko.learnMore}</Link>
