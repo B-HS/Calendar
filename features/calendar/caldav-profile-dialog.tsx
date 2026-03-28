@@ -28,6 +28,9 @@ type CaldavProfileDialogProps = {
     defaultName?: string
 }
 
+const escapeXml = (str: string) =>
+    str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+
 const generateMobileconfig = (config: {
     name: string
     description: string
@@ -37,6 +40,13 @@ const generateMobileconfig = (config: {
     locale: CalendarLocale
 }) => {
     const uuid = () => crypto.randomUUID()
+    const name = escapeXml(config.name)
+    const description = escapeXml(config.description || config.name)
+    const fullDescription = escapeXml(config.description || config.locale.caldavAccountSetup(config.name))
+    const username = escapeXml(config.username)
+    const password = escapeXml(config.password)
+    const hostname = escapeXml(new URL(config.caldavUrl).hostname)
+    const port = new URL(config.caldavUrl).port || CALDAV_DEFAULT_PORT
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -46,21 +56,21 @@ const generateMobileconfig = (config: {
     <array>
         <dict>
             <key>CalDAVAccountDescription</key>
-            <string>${config.description || config.name}</string>
+            <string>${description}</string>
             <key>CalDAVHostName</key>
-            <string>${new URL(config.caldavUrl).hostname}</string>
+            <string>${hostname}</string>
             <key>CalDAVPort</key>
-            <integer>${new URL(config.caldavUrl).port || CALDAV_DEFAULT_PORT}</integer>
+            <integer>${port}</integer>
             <key>CalDAVPrincipalURL</key>
             <string>/</string>
             <key>CalDAVUseSSL</key>
             <${config.caldavUrl.startsWith('https') ? 'true' : 'false'}/>
             <key>CalDAVUsername</key>
-            <string>${config.username}</string>
+            <string>${username}</string>
             <key>CalDAVPassword</key>
-            <string>${config.password}</string>
+            <string>${password}</string>
             <key>PayloadDisplayName</key>
-            <string>${config.name}</string>
+            <string>${name}</string>
             <key>PayloadIdentifier</key>
             <string>${CALDAV_IDENTIFIER_PREFIX}.${uuid()}</string>
             <key>PayloadType</key>
@@ -72,9 +82,9 @@ const generateMobileconfig = (config: {
         </dict>
     </array>
     <key>PayloadDisplayName</key>
-    <string>${config.name}</string>
+    <string>${name}</string>
     <key>PayloadDescription</key>
-    <string>${config.description || config.locale.caldavAccountSetup(config.name)}</string>
+    <string>${fullDescription}</string>
     <key>PayloadIdentifier</key>
     <string>${CALDAV_PROFILE_PREFIX}.${uuid()}</string>
     <key>PayloadOrganization</key>

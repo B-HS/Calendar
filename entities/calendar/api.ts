@@ -1,10 +1,11 @@
 'use server'
 
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import type { CalendarEvent } from './types'
 import { API_PATH, ERROR_CODE } from '@/shared/constant/api'
 import type { ApiResponse, CalendarEventResponse, CalendarGroupResponse, SubscriptionResponse } from './types'
 import { toCalendarEvent, toCalendarGroup } from './types'
+import { dateRangeSchema, eventFormSchema, groupFormSchema, groupUpdateSchema, uidSchema } from './validate'
 import dayjs from 'dayjs'
 
 const toExclusiveEndDate = (endDate: string) => dayjs(endDate).add(1, 'day').format('YYYY-MM-DD')
@@ -17,13 +18,40 @@ const toClientEvent = (r: CalendarEventResponse): CalendarEvent => {
 
 const API_URL = process.env.API_URL ?? 'http://localhost:9999'
 
-const serverFetch = async <T>(path: string, init?: RequestInit): Promise<T> => {
+const requireAuth = async () => {
     const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+    if (!cookieHeader) throw new Error('Unauthorized')
+
+    const res = await fetch(`${API_URL}/api/auth/get-session`, {
+        headers: { Cookie: cookieHeader },
+    })
+
+    if (!res.ok) throw new Error('Unauthorized')
+    const session = await res.json()
+    if (!session?.session) throw new Error('Unauthorized')
+
+    return cookieHeader
+}
+
+const verifyCsrf = async () => {
+    const headerStore = await headers()
+    const origin = headerStore.get('origin')
+    const host = headerStore.get('host')
+    if (origin && host) {
+        const originHost = new URL(origin).host
+        if (originHost !== host) throw new Error('CSRF validation failed')
+    }
+}
+
+const serverFetch = async <T>(path: string, init?: RequestInit): Promise<T> => {
+    await verifyCsrf()
+    const cookieHeader = await requireAuth()
     const res = await fetch(`${API_URL}${path}`, {
         ...init,
         headers: {
             'Content-Type': 'application/json',
-            'Cookie': cookieStore.toString(),
+            'Cookie': cookieHeader,
             ...init?.headers,
         },
     })
@@ -34,18 +62,21 @@ const serverFetch = async <T>(path: string, init?: RequestInit): Promise<T> => {
 }
 
 export const getEventsAction = async (startDate: string, endDate: string) => {
+    dateRangeSchema.parse({ startDate, endDate })
     const res = await serverFetch<ApiResponse<CalendarEventResponse[]>>(`${API_PATH.EVENTS.RANGE}?startDate=${startDate}&endDate=${endDate}`)
     if (!res.success) throw new Error(res.error.message)
     return res.data.map(toClientEvent)
 }
 
 export const getEventDetailAction = async (uid: string) => {
+    uidSchema.parse(uid)
     const res = await serverFetch<ApiResponse<CalendarEventResponse>>(API_PATH.EVENTS.DETAIL(uid))
     if (!res.success) throw new Error(res.error.message)
     return toClientEvent(res.data)
 }
 
 export const createEventAction = async (input: Omit<CalendarEvent, 'id'>) => {
+    eventFormSchema.parse(input)
     const body = {
         title: input.title,
         startDate: input.startDate,
@@ -68,6 +99,7 @@ export const createEventAction = async (input: Omit<CalendarEvent, 'id'>) => {
 }
 
 export const updateEventAction = async (uid: string, input: Partial<CalendarEvent>) => {
+    uidSchema.parse(uid)
     const { ...rest } = input
     const isAllDay = rest.isAllDay ?? false
     const body = {
@@ -85,6 +117,7 @@ export const updateEventAction = async (uid: string, input: Partial<CalendarEven
 }
 
 export const deleteEventAction = async (uid: string) => {
+    uidSchema.parse(uid)
     await serverFetch<void>(API_PATH.EVENTS.DELETE(uid), { method: 'DELETE' })
 }
 
@@ -95,6 +128,7 @@ export const getGroupsAction = async () => {
 }
 
 export const createGroupAction = async (input: { name: string; color: string }) => {
+    groupFormSchema.parse(input)
     const res = await serverFetch<ApiResponse<CalendarGroupResponse>>(API_PATH.GROUPS.CREATE, {
         method: 'POST',
         body: JSON.stringify(input),
@@ -104,6 +138,8 @@ export const createGroupAction = async (input: { name: string; color: string }) 
 }
 
 export const updateGroupAction = async (id: string, input: { name?: string; color?: string; sortOrder?: number; isVisible?: boolean }) => {
+    uidSchema.parse(id)
+    groupUpdateSchema.parse(input)
     const res = await serverFetch<ApiResponse<CalendarGroupResponse>>(API_PATH.GROUPS.UPDATE(id), {
         method: 'PATCH',
         body: JSON.stringify(input),
@@ -113,6 +149,7 @@ export const updateGroupAction = async (id: string, input: { name?: string; colo
 }
 
 export const deleteGroupAction = async (id: string) => {
+    uidSchema.parse(id)
     await serverFetch<void>(API_PATH.GROUPS.DELETE(id), { method: 'DELETE' })
 }
 

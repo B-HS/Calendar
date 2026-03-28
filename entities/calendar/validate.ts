@@ -40,3 +40,21 @@ export const eventFormSchema = z
     )
 
 export type EventFormInput = z.infer<typeof eventFormSchema>
+
+export const groupFormSchema = z.object({
+    name: z.string().min(1).max(50),
+    color: z.string().min(1),
+})
+
+export const groupUpdateSchema = z.object({
+    name: z.string().min(1).max(50).optional(),
+    color: z.string().min(1).optional(),
+    sortOrder: z.number().int().optional(),
+    isVisible: z.boolean().optional(),
+})
+
+export const uidSchema = z.string().min(1).max(200)
+export const dateRangeSchema = z.object({
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+})
