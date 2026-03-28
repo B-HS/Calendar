@@ -211,10 +211,12 @@ export const CalendarGrid: FC<CalendarGridProps> = ({ className }) => {
                 if (resizeOffset !== 0) {
                     if (edge === 'start') {
                         const newStart = dayjs(sourceEvent.startDate).add(resizeOffset, 'day').format(DATE_FORMAT)
-                        if (newStart <= sourceEvent.endDate) updateEvent(sourceEvent.id, { startDate: newStart })
+                        if (newStart <= sourceEvent.endDate)
+                            updateEvent(sourceEvent.id, { startDate: newStart, isAllDay: sourceEvent.isAllDay })
                     } else {
                         const newEnd = dayjs(sourceEvent.endDate).add(resizeOffset, 'day').format(DATE_FORMAT)
-                        if (newEnd >= sourceEvent.startDate) updateEvent(sourceEvent.id, { endDate: newEnd })
+                        if (newEnd >= sourceEvent.startDate)
+                            updateEvent(sourceEvent.id, { endDate: newEnd, isAllDay: sourceEvent.isAllDay })
                     }
                 }
             } else {
@@ -224,7 +226,7 @@ export const CalendarGrid: FC<CalendarGridProps> = ({ className }) => {
                 if (dayDelta !== 0) {
                     const newStart = dayjs(sourceEvent.startDate).add(dayDelta, 'day').format(DATE_FORMAT)
                     const newEnd = dayjs(sourceEvent.endDate).add(dayDelta, 'day').format(DATE_FORMAT)
-                    updateEvent(sourceEvent.id, { startDate: newStart, endDate: newEnd })
+                    updateEvent(sourceEvent.id, { startDate: newStart, endDate: newEnd, isAllDay: sourceEvent.isAllDay })
                 }
             }
         }
@@ -333,14 +335,26 @@ export const CalendarGrid: FC<CalendarGridProps> = ({ className }) => {
                                         const colorClass = getGroupById(resizePreview.event.groupId)?.color ?? 'bg-slate-400'
                                         return (
                                             <div
-                                                className={cn('absolute rounded-xs opacity-60', colorClass)}
+                                                className={cn('absolute z-20 rounded-xs opacity-60', colorClass)}
                                                 style={{
                                                     top: `${previewPos.lane * (EVENT_HEIGHT + EVENT_GAP)}px`,
                                                     left: `calc(${previewPos.startCol} * ${COLUMN_WIDTH_PERCENT}% + 1px)`,
                                                     width: `calc(${previewPos.span} * ${COLUMN_WIDTH_PERCENT}% - 2px)`,
                                                     height: `${EVENT_HEIGHT}px`,
-                                                }}
-                                            />
+                                                }}>
+                                                <div
+                                                    className={cn(
+                                                        'absolute top-0 bottom-0 w-2',
+                                                        resizePreview.edge === 'start' ? 'left-0' : 'right-0',
+                                                    )}>
+                                                    <div
+                                                        className={cn(
+                                                            'absolute top-1/2 h-3 w-0.5 -translate-y-1/2 rounded-full bg-white/80',
+                                                            resizePreview.edge === 'start' ? 'left-0.5' : 'right-0.5',
+                                                        )}
+                                                    />
+                                                </div>
+                                            </div>
                                         )
                                     })()}
                             </div>

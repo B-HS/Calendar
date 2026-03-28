@@ -36,7 +36,6 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
     const { data: events = initialEvents } = useCalendarEvents(startDate, endDate)
     const { data: groups = initialGroups } = useCalendarGroups()
     const { data: subscription } = useCalendarSubscription()
-
     const createEvent = useCreateEvent()
     const updateEvent = useUpdateEvent()
     const deleteEvent = useDeleteEvent()

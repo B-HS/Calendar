@@ -5,8 +5,17 @@ import type { CalendarEvent } from './types'
 import { API_PATH, ERROR_CODE } from '@/shared/constant/api'
 import type { ApiResponse, CalendarEventResponse, CalendarGroupResponse, SubscriptionResponse } from './types'
 import { toCalendarEvent, toCalendarGroup } from './types'
+import dayjs from 'dayjs'
 
-const API_URL = process.env.API_URL
+const toExclusiveEndDate = (endDate: string) => dayjs(endDate).add(1, 'day').format('YYYY-MM-DD')
+const toInclusiveEndDate = (endDate: string) => dayjs(endDate).subtract(1, 'day').format('YYYY-MM-DD')
+
+const toClientEvent = (r: CalendarEventResponse): CalendarEvent => {
+    const event = toCalendarEvent(r)
+    return event.isAllDay ? { ...event, endDate: toInclusiveEndDate(event.endDate) } : event
+}
+
+const API_URL = process.env.API_URL ?? 'http://localhost:9999'
 
 const serverFetch = async <T>(path: string, init?: RequestInit): Promise<T> => {
     const cookieStore = await cookies()
@@ -27,20 +36,20 @@ const serverFetch = async <T>(path: string, init?: RequestInit): Promise<T> => {
 export const getEventsAction = async (startDate: string, endDate: string) => {
     const res = await serverFetch<ApiResponse<CalendarEventResponse[]>>(`${API_PATH.EVENTS.RANGE}?startDate=${startDate}&endDate=${endDate}`)
     if (!res.success) throw new Error(res.error.message)
-    return res.data.map(toCalendarEvent)
+    return res.data.map(toClientEvent)
 }
 
 export const getEventDetailAction = async (uid: string) => {
     const res = await serverFetch<ApiResponse<CalendarEventResponse>>(API_PATH.EVENTS.DETAIL(uid))
     if (!res.success) throw new Error(res.error.message)
-    return toCalendarEvent(res.data)
+    return toClientEvent(res.data)
 }
 
 export const createEventAction = async (input: Omit<CalendarEvent, 'id'>) => {
     const body = {
         title: input.title,
         startDate: input.startDate,
-        endDate: input.endDate,
+        endDate: input.isAllDay ? toExclusiveEndDate(input.endDate) : input.endDate,
         startTime: input.startTime,
         endTime: input.endTime,
         isAllDay: input.isAllDay,
@@ -55,13 +64,15 @@ export const createEventAction = async (input: Omit<CalendarEvent, 'id'>) => {
         body: JSON.stringify(body),
     })
     if (!res.success) throw new Error(res.error.message)
-    return toCalendarEvent(res.data)
+    return toClientEvent(res.data)
 }
 
 export const updateEventAction = async (uid: string, input: Partial<CalendarEvent>) => {
     const { ...rest } = input
+    const isAllDay = rest.isAllDay ?? false
     const body = {
         ...rest,
+        endDate: rest.endDate ? (isAllDay ? toExclusiveEndDate(rest.endDate) : rest.endDate) : undefined,
         groupId: rest.groupId || null,
         status: rest.status?.toUpperCase(),
     }
@@ -70,7 +81,7 @@ export const updateEventAction = async (uid: string, input: Partial<CalendarEven
         body: JSON.stringify(body),
     })
     if (!res.success) throw new Error(res.error.message)
-    return toCalendarEvent(res.data)
+    return toClientEvent(res.data)
 }
 
 export const deleteEventAction = async (uid: string) => {
