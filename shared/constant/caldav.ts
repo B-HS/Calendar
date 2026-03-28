@@ -1,0 +1,9 @@
+export const CALDAV_PAYLOAD_TYPE = 'com.apple.caldav.account'
+export const CALDAV_PROFILE_TYPE = 'Configuration'
+export const CALDAV_IDENTIFIER_PREFIX = 'com.bcalendar.caldav'
+export const CALDAV_PROFILE_PREFIX = 'com.bcalendar.profile'
+export const CALDAV_ORGANIZATION = 'BCalendar'
+export const CALDAV_DEFAULT_USERNAME = 'user'
+export const CALDAV_DEFAULT_PORT = 443
+export const CALDAV_MIME_TYPE = 'application/x-apple-aspen-config'
+export const CALDAV_DEFAULT_NAME = '내 캘린더'

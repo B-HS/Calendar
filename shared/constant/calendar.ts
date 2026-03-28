@@ -1,0 +1,9 @@
+export const WEEKS_IN_GRID = 6
+export const DAYS_IN_WEEK = 7
+export const COLUMN_WIDTH_PERCENT = 14.2857
+export const MAX_VISIBLE_LANES = 4
+export const EVENT_HEIGHT = 24
+export const EVENT_GAP = 4
+export const POINTER_SENSOR_DISTANCE = 5
+export const TOUCH_SENSOR_DELAY = 200
+export const TOUCH_SENSOR_TOLERANCE = 5
