@@ -68,13 +68,6 @@ export const getEventsAction = async (startDate: string, endDate: string) => {
     return res.data.map(toClientEvent)
 }
 
-export const getEventDetailAction = async (uid: string) => {
-    uidSchema.parse(uid)
-    const res = await serverFetch<ApiResponse<CalendarEventResponse>>(API_PATH.EVENTS.DETAIL(uid))
-    if (!res.success) throw new Error(res.error.message)
-    return toClientEvent(res.data)
-}
-
 export const createEventAction = async (input: Omit<CalendarEvent, 'id'>) => {
     eventFormSchema.parse(input)
     const body = {

@@ -56,6 +56,34 @@ export type MovePreview = {
     targetDayIndex: number
 } | null
 
+export type CalendarDragMoveData = {
+    type: 'move'
+    dragType: 'move'
+    event: CalendarEvent
+    startCol: number
+    span: number
+    weekIndex: number
+}
+
+export type CalendarDragResizeData = {
+    type: 'resize-start' | 'resize-end'
+    dragType: 'resize'
+    event: CalendarEvent
+    weekIndex: number
+    startCol: number
+    span: number
+    lane: number
+    edge: 'start' | 'end'
+}
+
+export type CalendarDragData = CalendarDragMoveData | CalendarDragResizeData
+
+export type CalendarDropData = {
+    date: string
+    dayIndex: number
+    weekIndex: number
+}
+
 export type CalendarLocale = {
     weekdays: string[]
     monthNames: string[]
