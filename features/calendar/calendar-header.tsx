@@ -5,15 +5,16 @@ import { Button } from '@/shared/ui/button'
 import { ArrowLeft01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import dayjs from 'dayjs'
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { useCalendar } from '@/shared/hooks/use-calendar'
 
 type CalendarHeaderProps = {
     className?: string
     onToggleSidebar?: () => void
+    actions?: ReactNode
 }
 
-export const CalendarHeader: FC<CalendarHeaderProps> = ({ className, onToggleSidebar }) => {
+export const CalendarHeader: FC<CalendarHeaderProps> = ({ className, onToggleSidebar, actions }) => {
     const { currentDate, locale, goToPrevMonth, goToNextMonth, goToToday } = useCalendar()
 
     const d = dayjs(currentDate)
@@ -34,6 +35,7 @@ export const CalendarHeader: FC<CalendarHeaderProps> = ({ className, onToggleSid
                 </h1>
             </div>
             <div className='flex items-center gap-1'>
+                {actions}
                 <Button variant='outline' size='sm' onClick={goToToday} aria-label={locale.today}>
                     {locale.today}
                 </Button>

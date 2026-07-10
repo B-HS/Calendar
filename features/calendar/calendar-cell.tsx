@@ -4,7 +4,7 @@ import { cn } from '@/shared/lib/utils'
 import { useDroppable } from '@dnd-kit/core'
 import type { FC, MouseEvent } from 'react'
 import { formatDate, isSameMonth, isToday } from '@/shared/lib/calendar-utils'
-import type { CalendarEvent } from '@/entities/calendar/types'
+import type { CalendarDropData, CalendarEvent } from '@/entities/calendar/types'
 import { useCalendar } from '@/shared/hooks/use-calendar'
 
 type CalendarCellProps = {
@@ -25,7 +25,7 @@ export const CalendarCell: FC<CalendarCellProps> = ({ date, dayIndex, weekIndex,
 
     const { setNodeRef, isOver } = useDroppable({
         id: `cell-${dateStr}`,
-        data: { date: dateStr, dayIndex, weekIndex },
+        data: { date: dateStr, dayIndex, weekIndex } satisfies CalendarDropData,
     })
 
     const handleDoubleClick = (e: MouseEvent) => {

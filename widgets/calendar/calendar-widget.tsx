@@ -12,6 +12,9 @@ import {
     useUpdateGroup,
 } from '@/entities/calendar/query'
 import type { CalendarEvent, CalendarGroup } from '@/entities/calendar/types'
+import { useAiStatus } from '@/entities/ai/query'
+import { AiChatToggle } from '@/features/ai-chat/ai-chat-toggle'
+import { AiChatWidget } from '@/widgets/ai-chat/ai-chat-widget'
 import { Calendar } from '@/features/calendar/calendar'
 import { CalendarGrid } from '@/features/calendar/calendar-grid'
 import { CalendarHeader } from '@/features/calendar/calendar-header'
@@ -32,6 +35,9 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
     const [currentMonth, setCurrentMonth] = useState(today)
     const { startDate, endDate } = getMonthGridRange(currentMonth)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [isAiOpen, setIsAiOpen] = useState(false)
+    const { data: aiProviders = [] } = useAiStatus()
+    const hasAi = aiProviders.some((provider) => provider.connected)
     const { data: events = initialEvents } = useCalendarEvents(startDate, endDate)
     const { data: groups = initialGroups } = useCalendarGroups()
     const { data: subscription } = useCalendarSubscription()
@@ -114,9 +120,14 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
             </Drawer>
 
             <div className='flex flex-1 flex-col overflow-hidden'>
-                <CalendarHeader onToggleSidebar={() => setIsSidebarOpen(true)} />
+                <CalendarHeader
+                    onToggleSidebar={() => setIsSidebarOpen(true)}
+                    actions={hasAi ? <AiChatToggle isOpen={isAiOpen} onToggle={() => setIsAiOpen((prev) => !prev)} /> : null}
+                />
                 <CalendarGrid />
             </div>
+
+            {hasAi && isAiOpen && <AiChatWidget today={today} onClose={() => setIsAiOpen(false)} />}
         </Calendar>
     )
 }

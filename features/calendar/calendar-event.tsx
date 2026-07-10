@@ -4,7 +4,7 @@ import { COLUMN_WIDTH_PERCENT, EVENT_GAP, EVENT_HEIGHT } from '@/shared/constant
 import { cn } from '@/shared/lib/utils'
 import { useDraggable } from '@dnd-kit/core'
 import { type FC, type MouseEvent, useState } from 'react'
-import type { CalendarEvent as CalendarEventType, CalendarGroup } from '@/entities/calendar/types'
+import type { CalendarDragMoveData, CalendarDragResizeData, CalendarEvent as CalendarEventType, CalendarGroup } from '@/entities/calendar/types'
 import { useCalendar } from '@/shared/hooks/use-calendar'
 
 type CalendarEventBarProps = {
@@ -40,7 +40,7 @@ export const CalendarEventBar: FC<CalendarEventBarProps> = ({
 
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: `event-${event.id}-${weekIndex}-${startCol}`,
-        data: { type: 'move', event, startCol, span, weekIndex, dragType: 'move' },
+        data: { type: 'move', event, startCol, span, weekIndex, dragType: 'move' } satisfies CalendarDragMoveData,
         disabled: isOverResizeHandle,
     })
 
@@ -90,7 +90,9 @@ export const CalendarEventBar: FC<CalendarEventBarProps> = ({
             )}
             {isStart && (
                 <span className='truncate'>
-                    {!event.isAllDay && event.startTime && <span className='mr-1 shrink-0 text-white/70 hidden min-[900px]:inline'>{event.startTime}</span>}
+                    {!event.isAllDay && event.startTime && (
+                        <span className='mr-1 shrink-0 text-white/70 hidden min-[900px]:inline'>{event.startTime}</span>
+                    )}
                     {event.title}
                 </span>
             )}
@@ -124,7 +126,16 @@ type ResizeHandleProps = {
 const ResizeHandle: FC<ResizeHandleProps> = ({ eventId, weekIndex, startCol, span, lane, type, event, onHoverChange }) => {
     const { setNodeRef, listeners, attributes } = useDraggable({
         id: `${type}-${eventId}-${weekIndex}-${startCol}`,
-        data: { type, event, weekIndex, startCol, span, lane, edge: type === 'resize-start' ? 'start' : 'end', dragType: 'resize' },
+        data: {
+            type,
+            event,
+            weekIndex,
+            startCol,
+            span,
+            lane,
+            edge: type === 'resize-start' ? 'start' : 'end',
+            dragType: 'resize',
+        } satisfies CalendarDragResizeData,
     })
 
     const isStartEdge = type === 'resize-start'

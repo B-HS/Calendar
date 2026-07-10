@@ -1,6 +1,12 @@
 'use client'
 
-import { COLUMN_WIDTH_PERCENT, MAX_VISIBLE_LANES, POINTER_SENSOR_DISTANCE, TOUCH_SENSOR_DELAY, TOUCH_SENSOR_TOLERANCE } from '@/shared/constant/calendar'
+import {
+    COLUMN_WIDTH_PERCENT,
+    MAX_VISIBLE_LANES,
+    POINTER_SENSOR_DISTANCE,
+    TOUCH_SENSOR_DELAY,
+    TOUCH_SENSOR_TOLERANCE,
+} from '@/shared/constant/calendar'
 import { DATE_FORMAT } from '@/shared/constant/date'
 import { cn } from '@/shared/lib/utils'
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
@@ -8,7 +14,7 @@ import { DndContext, DragOverlay, PointerSensor, TouchSensor, pointerWithin, use
 import dayjs from 'dayjs'
 import { type FC, type MouseEvent, useState } from 'react'
 import { formatDate } from '@/shared/lib/calendar-utils'
-import type { CalendarEvent, MovePreview, ResizePreview } from '@/entities/calendar/types'
+import type { CalendarDragData, CalendarDropData, CalendarEvent, MovePreview, ResizePreview } from '@/entities/calendar/types'
 import { useCalendar } from '@/shared/hooks/use-calendar'
 import { CalendarCell } from './calendar-cell'
 import { CalendarEventContextMenu } from './calendar-context-menu'
@@ -139,31 +145,23 @@ export const CalendarGrid: FC<CalendarGridProps> = ({ className }) => {
     }
 
     const handleDragStart = (e: DragStartEvent) => {
-        const data = e.active.data.current as Record<string, unknown> | undefined
+        const data = e.active.data.current as CalendarDragData | undefined
         if (!data) return
-        const event = data.event as CalendarEvent
-        const dragType = data.dragType as 'move' | 'resize'
-        selectEvent(event.id)
+        selectEvent(data.event.id)
 
-        if (dragType === 'resize') {
-            const edge = data.edge as 'start' | 'end'
-            const weekIndex = data.weekIndex as number
-            const startCol = data.startCol as number
-            const span = data.span as number
-            const lane = data.lane as number
+        if (data.dragType === 'resize') {
             setResizePreview({
-                event,
-                edge,
-                originalLane: lane,
-                sourceWeekIndex: weekIndex,
-                sourceStartCol: startCol,
-                sourceSpan: span,
-                targetWeekIndex: weekIndex,
-                targetDayIndex: edge === 'start' ? startCol : startCol + span - 1,
+                event: data.event,
+                edge: data.edge,
+                originalLane: data.lane,
+                sourceWeekIndex: data.weekIndex,
+                sourceStartCol: data.startCol,
+                sourceSpan: data.span,
+                targetWeekIndex: data.weekIndex,
+                targetDayIndex: data.edge === 'start' ? data.startCol : data.startCol + data.span - 1,
             })
         } else {
-            const startCol = data.startCol as number
-            const weekIndex = data.weekIndex as number
+            const { event, startCol, weekIndex } = data
             const eventTotalDays = dayjs(event.endDate).diff(dayjs(event.startDate), 'day') + 1
             const activatorEvt = e.activatorEvent as PointerEvent
             const weekRow = (activatorEvt.target as HTMLElement).closest('[data-week-row]')
@@ -180,7 +178,7 @@ export const CalendarGrid: FC<CalendarGridProps> = ({ className }) => {
     }
 
     const handleDragOver = (e: DragOverEvent) => {
-        const target = e.over?.data.current as { dayIndex: number; weekIndex: number } | undefined
+        const target = e.over?.data.current as CalendarDropData | undefined
         if (!target) return
         if (resizePreview) {
             setResizePreview((prev) => (prev ? { ...prev, targetWeekIndex: target.weekIndex, targetDayIndex: target.dayIndex } : null))
@@ -192,31 +190,28 @@ export const CalendarGrid: FC<CalendarGridProps> = ({ className }) => {
 
     const handleDragEnd = (e: DragEndEvent) => {
         const { over, active } = e
-        const sourceData = active.data.current as Record<string, unknown> | undefined
-        const targetData = over?.data.current as { dayIndex: number; weekIndex: number; date: string } | undefined
+        const sourceData = active.data.current as CalendarDragData | undefined
+        const targetData = over?.data.current as CalendarDropData | undefined
 
         if (sourceData && targetData) {
-            const sourceEvent = sourceData.event as CalendarEvent
-            const dragType = sourceData.dragType as 'move' | 'resize'
-            const sourceWeekIndex = sourceData.weekIndex as number
-            const clickedCol = sourceData.startCol as number
+            const sourceEvent = sourceData.event
+            const sourceWeekIndex = sourceData.weekIndex
+            const clickedCol = sourceData.startCol
             const targetDayIndex = targetData.dayIndex
             const targetWeekIndex = targetData.weekIndex
 
-            if (dragType === 'resize') {
-                const edge = sourceData.edge as 'start' | 'end'
-                const position = { startCol: sourceData.startCol as number, span: sourceData.span as number }
+            if (sourceData.dragType === 'resize') {
+                const edge = sourceData.edge
+                const position = { startCol: sourceData.startCol, span: sourceData.span }
                 const edgeCol = edge === 'start' ? position.startCol : position.startCol + position.span - 1
                 const resizeOffset = targetDayIndex - edgeCol + (targetWeekIndex - sourceWeekIndex) * 7
                 if (resizeOffset !== 0) {
                     if (edge === 'start') {
                         const newStart = dayjs(sourceEvent.startDate).add(resizeOffset, 'day').format(DATE_FORMAT)
-                        if (newStart <= sourceEvent.endDate)
-                            updateEvent(sourceEvent.id, { startDate: newStart, isAllDay: sourceEvent.isAllDay })
+                        if (newStart <= sourceEvent.endDate) updateEvent(sourceEvent.id, { startDate: newStart, isAllDay: sourceEvent.isAllDay })
                     } else {
                         const newEnd = dayjs(sourceEvent.endDate).add(resizeOffset, 'day').format(DATE_FORMAT)
-                        if (newEnd >= sourceEvent.startDate)
-                            updateEvent(sourceEvent.id, { endDate: newEnd, isAllDay: sourceEvent.isAllDay })
+                        if (newEnd >= sourceEvent.startDate) updateEvent(sourceEvent.id, { endDate: newEnd, isAllDay: sourceEvent.isAllDay })
                     }
                 }
             } else {
