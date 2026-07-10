@@ -105,7 +105,7 @@ export const updateEventAction = async (uid: string, input: Partial<CalendarEven
     const body = {
         ...rest,
         endDate: rest.endDate ? (isAllDay ? toExclusiveEndDate(rest.endDate) : rest.endDate) : undefined,
-        groupId: rest.groupId || null,
+        groupId: rest.groupId === undefined ? undefined : rest.groupId || null,
         status: rest.status?.toUpperCase(),
     }
     const res = await serverFetch<ApiResponse<CalendarEventResponse>>(API_PATH.EVENTS.UPDATE(uid), {
