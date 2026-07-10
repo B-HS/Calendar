@@ -36,9 +36,9 @@
 
 ## 작업 6 — 컨벤션 리팩토링 (합의 11번)
 
-- [ ] a. shared/ui/theme-provider.tsx function → arrow 전환 (수작업 코드)
-- [ ] b. calendar-grid.tsx dnd 데이터 `as` 단언 정리 (가능 범위)
-- [ ] c. 검증 + 커밋
+- [x] a. shared/ui/theme-provider.tsx function → arrow 전환 (수작업 코드)
+- [x] b. calendar-grid.tsx dnd 데이터 `as` 단언 정리 (가능 범위)
+- [x] c. 검증 + 커밋
 
 ## 진행 로그
 
@@ -46,3 +46,4 @@
 - 2026-07-10: 작업 1 완료 — next 16.2.10 핀 갱신 · tsc/build/test 68 pass · 커밋 11cc361.
 - 2026-07-10: 보안 감사 완료. uidSchema 경로문자 제약(test 68 pass). 커밋 f5aef92. 리포트: docs/security-audit-2026-07-10.md
 - 2026-07-10: groupId 소실 버그 실패테스트 재현→수정(커밋 dd87f32, test 71 pass). 버그헌팅 6건 발견 → docs/bug-hunt-2026-07-10.md (BUG-1 rrule 전개·BUG-2 range overlap·BUG-3 그리드 후행주 누락이 high/medium, 수정은 지시 후).
+- 2026-07-10: 작업 6(컨벤션) 완료 — theme-provider arrow, getEventDetailAction dead code 제거. test 71 pass. 커밋 3e3856a.
