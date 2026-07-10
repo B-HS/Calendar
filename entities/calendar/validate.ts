@@ -53,7 +53,14 @@ export const groupUpdateSchema = z.object({
     isVisible: z.boolean().optional(),
 })
 
-export const uidSchema = z.string().min(1).max(200)
+export const uidSchema = z
+    .string()
+    .min(1)
+    .max(200)
+    .regex(/^[A-Za-z0-9._@-]+$/)
+    .refine((value) => value !== '.' && !value.includes('..'), {
+        message: 'uid must not contain relative path segments',
+    })
 export const dateRangeSchema = z.object({
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
