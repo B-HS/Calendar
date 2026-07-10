@@ -1,6 +1,6 @@
 'use client'
 
-import { Cancel01Icon } from '@hugeicons/core-free-icons'
+import { Cancel01Icon, Refresh01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { type FC, type PointerEvent, useEffect, useRef } from 'react'
 import type { AiChatMessage as AiChatMessageType, AiModel, AiProvider } from '@/entities/ai/types'
@@ -86,11 +86,21 @@ export const AiChatPanel: FC<AiChatPanelProps> = ({
                 <div className='flex items-center gap-1'>
                     {providers.length > 1 && <AiChatProviderSelect providers={providers} selected={selectedProvider} onSelect={onSelectProvider} />}
                     {models.length > 0 && <AiChatModelSelect models={models} selectedModelId={selectedModelId} onSelect={onSelectModel} />}
-                    {models.length === 0 && canRefreshModels && (
-                        <Button variant='outline' size='xs' onClick={onRefreshModels} disabled={isRefreshingModels}>
-                            {AI_LABEL.refreshModels}
-                        </Button>
-                    )}
+                    {canRefreshModels &&
+                        (models.length === 0 ? (
+                            <Button variant='outline' size='xs' onClick={onRefreshModels} disabled={isRefreshingModels}>
+                                {AI_LABEL.refreshModels}
+                            </Button>
+                        ) : (
+                            <Button
+                                variant='ghost'
+                                size='icon-sm'
+                                onClick={onRefreshModels}
+                                disabled={isRefreshingModels}
+                                aria-label={AI_LABEL.refreshModels}>
+                                <HugeiconsIcon icon={Refresh01Icon} size={16} className={isRefreshingModels ? 'animate-spin' : ''} />
+                            </Button>
+                        ))}
                     <Button variant='ghost' size='icon-sm' onClick={onClose} aria-label={AI_LABEL.close}>
                         <HugeiconsIcon icon={Cancel01Icon} size={16} />
                     </Button>

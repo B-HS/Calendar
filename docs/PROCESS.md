@@ -53,3 +53,4 @@
 - 2026-07-10: 작업 4(AI) 초판 — 전체 일정 context, context 기준 답변 강제, SSE 채팅 패널. test 92 pass. 커밋 86d7fe7.
 - 2026-07-10: 작업 4(AI) 재작업 — 원격 hub 계약 재정렬(providers/models/completions·stream), 프로바이더 status(active) 게이팅·모델 선택 UI. test 106 pass. 커밋 28ad835.
 - 2026-07-10: 모델 목록에 GPT-5.1 계열 구모델만 노출되던 문제는 hub 측 원인(codex client_version 구버전·fallback·캐시 stale)으로 확인 — hyun-hub 에서 수정(client_version 0.144.1, fallback 은 현행 Codex 라인업 전체 7종, 기본 조회는 API 응답 전체 노출, 캐시 자동 갱신은 사용자 결정으로 미도입). 이 레포 코드 변경 없음. **hub 배포 완료 후** "모델 새로고침"으로 캐시를 교체해야 전체 라인업이 노출됨.
+- 2026-07-10: 모델 새로고침 버튼이 빈 목록일 때만 노출되어 구모델 캐시 상태에선 갱신 불가 → ai-chat-panel 에서 상시 노출(목록 있으면 아이콘 버튼, 비면 라벨 버튼)로 수정 + 첫 컴포넌트 테스트 3건 추가(109 pass).
