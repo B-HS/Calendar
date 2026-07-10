@@ -12,9 +12,9 @@
 
 ## 작업 2 — 보안 (Phase 2)
 
-- [ ] a. Workflow(opus·xhigh) 심층 보안 감사
-- [ ] b. 발견 이슈 중 심각·운영 지장 이슈 즉시 수정 (verifyCsrf 약점 포함 검토)
-- [ ] c. 리포트 docs/ 기록 + 커밋
+- [x] a. Workflow(opus·xhigh) 심층 보안 감사
+- [x] b. 발견 이슈 중 심각·운영 지장 이슈 즉시 수정 (verifyCsrf 약점 포함 검토)
+- [x] c. 리포트 docs/ 기록 + 커밋
 
 ## 작업 3 — groupId 소실 버그 (합의 10번, Phase 6)
 
@@ -44,3 +44,4 @@
 
 - 2026-07-10: 정찰 완료(기준선 tsc PASS · test 68 pass), 합의 문서 기록, 체크리스트 작성.
 - 2026-07-10: 작업 1 완료 — next 16.2.10 핀 갱신 · tsc/build/test 68 pass · 커밋 11cc361.
+- 2026-07-10: 보안 감사 완료. uidSchema 경로문자 제약(test 68 pass). 커밋 f5aef92. 리포트: docs/security-audit-2026-07-10.md
