@@ -25,14 +25,16 @@
 ## 작업 4 — AI 기능 (Phase 6, 구현 전 설계 컨펌 필수)
 
 - [x] a. hub AI 인프라(멀티 프로바이더 프록시) 완성 후 착수
-- [x] b. 계정에 AI 연동 시에만 기능 노출
+- [x] b. 계정에 AI 연동 시에만 기능 노출 (프로바이더 status active 게이팅)
 - [x] c. context = 해당 계정의 모든 일정. 답변은 context 내용 기준으로만 하도록 강제하는 로직
 - [x] d. 검증 + 커밋
+- [x] e. 원격 hub 계약 재작업 — providers/models/completions(stream) 로 API 재정렬, 프로바이더 status·모델 선택 UI 추가 (커밋 28ad835, test 106 pass)
 
 ## 작업 5 — 심층 버그 헌팅 (4개월 유지보수 공백 대응)
 
-- [x] a. Workflow(opus·xhigh) 코드베이스 버그 헌팅 → 사용자에게 보고 (수정은 지시 후)
-- [ ] b. 표면 관찰 이미 확보: rrule(반복일정)이 toCalendarEvent 매퍼에서 소실 · getEventDetailAction dead code · 종일 이벤트 exclusive/inclusive 경계
+- [x] a. Workflow(opus·xhigh) 코드베이스 버그 헌팅 → 리포트 docs/bug-hunt-2026-07-10.md
+- [x] b. 발견 버그 수정: groupId 소실(dd87f32, 클라) · BUG-3 조회범위 6주 그리드 정렬(1a94aa8, 클라) · BUG-1 rrule 서버 전개 · BUG-2 overlap 조회(BUG-1/2 는 hyun-hub 서버측 수정)
+- [ ] c. 미수정 잔여(low, 지시 시 수정): BUG-5 더보기 드로어 그룹 가시성 · BUG-6 부분 PATCH isAllDay 기본값 · BUG-7 월이동 로딩 폴백
 
 ## 작업 6 — 컨벤션 리팩토링 (합의 11번)
 
@@ -47,4 +49,6 @@
 - 2026-07-10: 보안 감사 완료. uidSchema 경로문자 제약(test 68 pass). 커밋 f5aef92. 리포트: docs/security-audit-2026-07-10.md
 - 2026-07-10: groupId 소실 버그 실패테스트 재현→수정(커밋 dd87f32, test 71 pass). 버그헌팅 6건 발견 → docs/bug-hunt-2026-07-10.md (BUG-1 rrule 전개·BUG-2 range overlap·BUG-3 그리드 후행주 누락이 high/medium, 수정은 지시 후).
 - 2026-07-10: 작업 6(컨벤션) 완료 — theme-provider arrow, getEventDetailAction dead code 제거. test 71 pass. 커밋 3e3856a.
-- 2026-07-10: 작업 4(AI) 완료 — 전체 일정 context, context 기준 답변 강제, SSE 채팅 패널. test 92 pass. 커밋 86d7fe7.
+- 2026-07-10: BUG-3(조회범위-그리드 후행주 누락) 수정 — getMonthGridRange 로 조회 endDate 를 6주 그리드에 정렬(page.tsx·calendar-widget.tsx). test 72 pass. 커밋 1a94aa8.
+- 2026-07-10: 작업 4(AI) 초판 — 전체 일정 context, context 기준 답변 강제, SSE 채팅 패널. test 92 pass. 커밋 86d7fe7.
+- 2026-07-10: 작업 4(AI) 재작업 — 원격 hub 계약 재정렬(providers/models/completions·stream), 프로바이더 status(active) 게이팅·모델 선택 UI. test 106 pass. 커밋 28ad835.
