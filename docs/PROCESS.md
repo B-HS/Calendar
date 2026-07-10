@@ -24,10 +24,10 @@
 
 ## 작업 4 — AI 기능 (Phase 6, 구현 전 설계 컨펌 필수)
 
-- [ ] a. hub AI 인프라(멀티 프로바이더 프록시) 완성 후 착수
-- [ ] b. 계정에 AI 연동 시에만 기능 노출
-- [ ] c. context = 해당 계정의 모든 일정. 답변은 context 내용 기준으로만 하도록 강제하는 로직
-- [ ] d. 검증 + 커밋
+- [x] a. hub AI 인프라(멀티 프로바이더 프록시) 완성 후 착수
+- [x] b. 계정에 AI 연동 시에만 기능 노출
+- [x] c. context = 해당 계정의 모든 일정. 답변은 context 내용 기준으로만 하도록 강제하는 로직
+- [x] d. 검증 + 커밋
 
 ## 작업 5 — 심층 버그 헌팅 (4개월 유지보수 공백 대응)
 
@@ -47,3 +47,4 @@
 - 2026-07-10: 보안 감사 완료. uidSchema 경로문자 제약(test 68 pass). 커밋 f5aef92. 리포트: docs/security-audit-2026-07-10.md
 - 2026-07-10: groupId 소실 버그 실패테스트 재현→수정(커밋 dd87f32, test 71 pass). 버그헌팅 6건 발견 → docs/bug-hunt-2026-07-10.md (BUG-1 rrule 전개·BUG-2 range overlap·BUG-3 그리드 후행주 누락이 high/medium, 수정은 지시 후).
 - 2026-07-10: 작업 6(컨벤션) 완료 — theme-provider arrow, getEventDetailAction dead code 제거. test 71 pass. 커밋 3e3856a.
+- 2026-07-10: 작업 4(AI) 완료 — 전체 일정 context, context 기준 답변 강제, SSE 채팅 패널. test 92 pass. 커밋 86d7fe7.
