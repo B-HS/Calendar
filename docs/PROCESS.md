@@ -18,9 +18,9 @@
 
 ## 작업 3 — groupId 소실 버그 (합의 10번, Phase 6)
 
-- [ ] a. 실패 테스트 작성으로 재현: updateEventAction 이 미변경 groupId 를 null 로 직렬화 → hub toEventPatch 가 그룹 해제로 처리
-- [ ] b. 수정: 미변경 필드는 undefined 로 생략 (`groupId: rest.groupId || null` 제거)
-- [ ] c. 테스트 통과 확인 + 커밋
+- [x] a. 실패 테스트 작성으로 재현: updateEventAction 이 미변경 groupId 를 null 로 직렬화 → hub toEventPatch 가 그룹 해제로 처리
+- [x] b. 수정: 미변경 필드는 undefined 로 생략 (`groupId: rest.groupId || null` 제거)
+- [x] c. 테스트 통과 확인 + 커밋
 
 ## 작업 4 — AI 기능 (Phase 6, 구현 전 설계 컨펌 필수)
 
@@ -31,7 +31,7 @@
 
 ## 작업 5 — 심층 버그 헌팅 (4개월 유지보수 공백 대응)
 
-- [ ] a. Workflow(opus·xhigh) 코드베이스 버그 헌팅 → 사용자에게 보고 (수정은 지시 후)
+- [x] a. Workflow(opus·xhigh) 코드베이스 버그 헌팅 → 사용자에게 보고 (수정은 지시 후)
 - [ ] b. 표면 관찰 이미 확보: rrule(반복일정)이 toCalendarEvent 매퍼에서 소실 · getEventDetailAction dead code · 종일 이벤트 exclusive/inclusive 경계
 
 ## 작업 6 — 컨벤션 리팩토링 (합의 11번)
@@ -45,3 +45,4 @@
 - 2026-07-10: 정찰 완료(기준선 tsc PASS · test 68 pass), 합의 문서 기록, 체크리스트 작성.
 - 2026-07-10: 작업 1 완료 — next 16.2.10 핀 갱신 · tsc/build/test 68 pass · 커밋 11cc361.
 - 2026-07-10: 보안 감사 완료. uidSchema 경로문자 제약(test 68 pass). 커밋 f5aef92. 리포트: docs/security-audit-2026-07-10.md
+- 2026-07-10: groupId 소실 버그 실패테스트 재현→수정(커밋 dd87f32, test 71 pass). 버그헌팅 6건 발견 → docs/bug-hunt-2026-07-10.md (BUG-1 rrule 전개·BUG-2 range overlap·BUG-3 그리드 후행주 누락이 high/medium, 수정은 지시 후).
