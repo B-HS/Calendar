@@ -3,19 +3,26 @@
 import { Cancel01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { type FC, type PointerEvent, useEffect, useRef } from 'react'
-import type { AiChatMessage as AiChatMessageType } from '@/entities/ai/types'
+import type { AiChatMessage as AiChatMessageType, AiModel, AiProvider } from '@/entities/ai/types'
 import { AI_LABEL } from '@/shared/constant/ai'
 import { Button } from '@/shared/ui/button'
 import { AiChatInput } from './ai-chat-input'
 import { AiChatMessage } from './ai-chat-message'
+import { AiChatModelSelect } from './ai-chat-model-select'
 import { AiChatProviderSelect } from './ai-chat-provider-select'
 
 type AiChatPanelProps = {
     width: number
     onResize: (width: number) => void
-    providers: string[]
+    providers: AiProvider[]
     selectedProvider: string
     onSelectProvider: (provider: string) => void
+    models: AiModel[]
+    selectedModelId: string
+    onSelectModel: (modelId: string) => void
+    canRefreshModels: boolean
+    isRefreshingModels: boolean
+    onRefreshModels: () => void
     messages: AiChatMessageType[]
     isStreaming: boolean
     onSend: (text: string) => void
@@ -29,6 +36,12 @@ export const AiChatPanel: FC<AiChatPanelProps> = ({
     providers,
     selectedProvider,
     onSelectProvider,
+    models,
+    selectedModelId,
+    onSelectModel,
+    canRefreshModels,
+    isRefreshingModels,
+    onRefreshModels,
     messages,
     isStreaming,
     onSend,
@@ -72,6 +85,12 @@ export const AiChatPanel: FC<AiChatPanelProps> = ({
                 <span className='text-sm font-semibold'>{AI_LABEL.title}</span>
                 <div className='flex items-center gap-1'>
                     {providers.length > 1 && <AiChatProviderSelect providers={providers} selected={selectedProvider} onSelect={onSelectProvider} />}
+                    {models.length > 0 && <AiChatModelSelect models={models} selectedModelId={selectedModelId} onSelect={onSelectModel} />}
+                    {models.length === 0 && canRefreshModels && (
+                        <Button variant='outline' size='xs' onClick={onRefreshModels} disabled={isRefreshingModels}>
+                            {AI_LABEL.refreshModels}
+                        </Button>
+                    )}
                     <Button variant='ghost' size='icon-sm' onClick={onClose} aria-label={AI_LABEL.close}>
                         <HugeiconsIcon icon={Cancel01Icon} size={16} />
                     </Button>

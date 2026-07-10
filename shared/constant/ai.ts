@@ -1,9 +1,13 @@
 export const AI_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:9999'
 
 export const AI_API_PATH = {
-    STATUS: '/api/ai/status',
-    CHAT: '/api/ai/chat',
+    PROVIDERS: '/api/ai/providers',
+    MODELS: (provider: string) => `/api/ai/${provider}/models`,
+    MODELS_REFRESH: (provider: string) => `/api/ai/${provider}/models/refresh`,
+    COMPLETIONS_STREAM: '/api/ai/completions/stream',
 } as const
+
+export const AI_FEATURE_KEY = 'calendar'
 
 export const AI_CONTEXT_PAST_MONTHS = 12
 export const AI_CONTEXT_FUTURE_MONTHS = 12
@@ -32,6 +36,8 @@ export const AI_LABEL = {
     empty: '일정에 대해 무엇이든 물어보세요.',
     thinking: '생각하는 중',
     provider: '모델 제공자',
+    model: '모델',
+    refreshModels: '모델 목록 갱신',
     resize: '패널 크기 조절',
     errorGeneric: 'AI 응답에 실패했습니다.',
 } as const

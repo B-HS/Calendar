@@ -1,7 +1,7 @@
 'use client'
 
 import type { AiChatMessage } from './types'
-import { aiChatDeltaSchema, aiChatErrorSchema, aiErrorResponseSchema, parseAiProviders } from './types'
+import { aiChatDeltaSchema, aiChatErrorSchema, aiErrorResponseSchema, parseAiModels, parseAiProviders } from './types'
 import { AI_API_PATH, AI_BASE_URL } from '@/shared/constant/ai'
 
 export type AiChatError = Error & { code: string }
@@ -30,20 +30,40 @@ export const parseSseFrame = (frame: string): SseEvent | null => {
     return { event, data: dataLines.join('\n') }
 }
 
-export const getAiStatus = async () => {
-    const res = await fetch(`${AI_BASE_URL}${AI_API_PATH.STATUS}`, {
+export const getAiProviders = async () => {
+    const res = await fetch(`${AI_BASE_URL}${AI_API_PATH.PROVIDERS}`, {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     })
-    if (!res.ok) throw createAiChatError('AI_STATUS_FAILED', 'AI 상태를 확인할 수 없습니다.')
+    if (!res.ok) throw createAiChatError('AI_PROVIDERS_FAILED', 'AI 프로바이더를 확인할 수 없습니다.')
     const raw: unknown = await res.json()
     return parseAiProviders(raw)
 }
 
+export const getAiModels = async (provider: string) => {
+    const res = await fetch(`${AI_BASE_URL}${AI_API_PATH.MODELS(provider)}`, {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) throw createAiChatError('AI_MODELS_FAILED', 'AI 모델 목록을 불러올 수 없습니다.')
+    const raw: unknown = await res.json()
+    return parseAiModels(raw)
+}
+
+export const refreshAiModels = async (provider: string) => {
+    const res = await fetch(`${AI_BASE_URL}${AI_API_PATH.MODELS_REFRESH(provider)}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) throw createAiChatError('AI_MODELS_REFRESH_FAILED', 'AI 모델 목록을 갱신할 수 없습니다.')
+}
+
 type AiChatStreamParams = {
     provider: string
-    model?: string
+    modelId: string
     messages: AiChatMessage[]
+    featureKey?: string
 }
 
 type AiChatStreamCallbacks = {
@@ -52,7 +72,7 @@ type AiChatStreamCallbacks = {
 }
 
 export const streamAiChat = async (params: AiChatStreamParams, { signal, onDelta }: AiChatStreamCallbacks) => {
-    const res = await fetch(`${AI_BASE_URL}${AI_API_PATH.CHAT}`, {
+    const res = await fetch(`${AI_BASE_URL}${AI_API_PATH.COMPLETIONS_STREAM}`, {
         method: 'POST',
         credentials: 'include',
         signal,
@@ -82,7 +102,7 @@ export const streamAiChat = async (params: AiChatStreamParams, { signal, onDelta
         for (const frame of frames) {
             const parsed = parseSseFrame(frame)
             if (!parsed) continue
-            if (parsed.event === 'done' || parsed.data === '[DONE]') return
+            if (parsed.event === 'done') return
             if (parsed.event === 'error') {
                 const errorPayload = aiChatErrorSchema.safeParse(safeJsonParse(parsed.data))
                 throw errorPayload.success

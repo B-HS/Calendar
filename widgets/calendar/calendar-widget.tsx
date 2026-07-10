@@ -12,7 +12,7 @@ import {
     useUpdateGroup,
 } from '@/entities/calendar/query'
 import type { CalendarEvent, CalendarGroup } from '@/entities/calendar/types'
-import { useAiStatus } from '@/entities/ai/query'
+import { useAiProviders } from '@/entities/ai/query'
 import { AiChatToggle } from '@/features/ai-chat/ai-chat-toggle'
 import { AiChatWidget } from '@/widgets/ai-chat/ai-chat-widget'
 import { Calendar } from '@/features/calendar/calendar'
@@ -36,8 +36,8 @@ export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, 
     const { startDate, endDate } = getMonthGridRange(currentMonth)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [isAiOpen, setIsAiOpen] = useState(false)
-    const { data: aiProviders = [] } = useAiStatus()
-    const hasAi = aiProviders.some((provider) => provider.connected)
+    const { data: aiProviders = [] } = useAiProviders()
+    const hasAi = aiProviders.some((provider) => provider.status === 'active')
     const { data: events = initialEvents } = useCalendarEvents(startDate, endDate)
     const { data: groups = initialGroups } = useCalendarGroups()
     const { data: subscription } = useCalendarSubscription()
