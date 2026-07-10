@@ -52,4 +52,4 @@
 - 2026-07-10: BUG-3(조회범위-그리드 후행주 누락) 수정 — getMonthGridRange 로 조회 endDate 를 6주 그리드에 정렬(page.tsx·calendar-widget.tsx). test 72 pass. 커밋 1a94aa8.
 - 2026-07-10: 작업 4(AI) 초판 — 전체 일정 context, context 기준 답변 강제, SSE 채팅 패널. test 92 pass. 커밋 86d7fe7.
 - 2026-07-10: 작업 4(AI) 재작업 — 원격 hub 계약 재정렬(providers/models/completions·stream), 프로바이더 status(active) 게이팅·모델 선택 UI. test 106 pass. 커밋 28ad835.
-- 2026-07-10: 모델 목록에 GPT-5.1 계열 구모델만 노출되던 문제는 hub 측 원인(codex client_version 구버전·fallback·캐시 stale)으로 확인 — hyun-hub 에서 수정(client_version 0.144.1, fallback 은 현행 Codex 라인업 전체 7종, listCached 24h TTL 자동 갱신, 기본 조회는 API 응답 전체 노출). 이 레포 코드 변경 없음. hub 배포 후 모델 새로고침 또는 TTL 로 전체 라인업 노출 확인만 필요.
+- 2026-07-10: 모델 목록에 GPT-5.1 계열 구모델만 노출되던 문제는 hub 측 원인(codex client_version 구버전·fallback·캐시 stale)으로 확인 — hyun-hub 에서 수정(client_version 0.144.1, fallback 은 현행 Codex 라인업 전체 7종, 기본 조회는 API 응답 전체 노출, 캐시 자동 갱신은 사용자 결정으로 미도입). 이 레포 코드 변경 없음. **hub 배포 완료 후** "모델 새로고침"으로 캐시를 교체해야 전체 라인업이 노출됨.
