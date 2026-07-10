@@ -31,6 +31,12 @@ export const getMonthDays = (year: number, month: number): Date[][] => {
     return weeks
 }
 
+export const getMonthGridRange = (monthDate: Date | string) => {
+    const startOfGrid = dayjs(monthDate).startOf('month').startOf('week')
+    const endOfGrid = startOfGrid.add(WEEKS_IN_GRID * DAYS_IN_WEEK - 1, 'day')
+    return { startDate: startOfGrid.format(DATE_FORMAT), endDate: endOfGrid.format(DATE_FORMAT) }
+}
+
 export const computeWeekLayouts = (weekDays: Date[], events: CalendarEvent[]): WeekRow => {
     const weekStart = dayjs(weekDays[0])
     const weekEnd = dayjs(weekDays[6])

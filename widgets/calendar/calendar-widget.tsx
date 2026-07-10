@@ -17,11 +17,9 @@ import { CalendarGrid } from '@/features/calendar/calendar-grid'
 import { CalendarHeader } from '@/features/calendar/calendar-header'
 import { CalendarSidebar } from '@/features/calendar/calendar-sidebar'
 import { ko } from '@/shared/lib/i18n'
-import { formatDate } from '@/shared/lib/calendar-utils'
+import { formatDate, getMonthGridRange } from '@/shared/lib/calendar-utils'
 import { CalendarExport } from '@/features/calendar/calendar-export'
-import { DATE_FORMAT } from '@/shared/constant/date'
 import { Drawer, DrawerContent } from '@/shared/ui/drawer'
-import dayjs from 'dayjs'
 import { type FC, useState } from 'react'
 
 type CalendarWidgetProps = {
@@ -32,8 +30,7 @@ type CalendarWidgetProps = {
 
 export const CalendarWidget: FC<CalendarWidgetProps> = ({ today, initialEvents, initialGroups }) => {
     const [currentMonth, setCurrentMonth] = useState(today)
-    const startDate = dayjs(currentMonth).startOf('month').startOf('week').format(DATE_FORMAT)
-    const endDate = dayjs(currentMonth).endOf('month').endOf('week').format(DATE_FORMAT)
+    const { startDate, endDate } = getMonthGridRange(currentMonth)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const { data: events = initialEvents } = useCalendarEvents(startDate, endDate)
     const { data: groups = initialGroups } = useCalendarGroups()
